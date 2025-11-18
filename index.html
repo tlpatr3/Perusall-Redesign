@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Perusall Minimal Prototype</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Link to CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+<div class="app">
+
+  <!-- Global nav -->
+  <header class="top-nav" id="globalNav">
+    <div class="logo">Perusall Minimal</div>
+    <nav class="nav-links">
+      <button class="nav-link active">Courses</button>
+      <button class="nav-link">Assignments</button>
+      <button class="nav-link">My Annotations</button>
+      <button class="nav-link">Profile</button>
+    </nav>
+    <div class="nav-right">
+      <div class="profile-badge" id="homeProfile">
+        TP
+        <span class="dot"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard View -->
+  <section class="view active" id="dashboardView">
+    <div class="home-inner">
+      <div class="home-title">Welcome back, Tiffany</div>
+      <div class="home-subtitle">
+        Review your courses and jump straight into this week’s reading.
+      </div>
+
+      <div class="course-list">
+        <article class="course-card">
+          <div class="course-title">LIS 636 – Interaction Design</div>
+          <div class="course-meta">
+            Current reading: Algorithmic Injustice and Social Systems
+          </div>
+          <div class="chip">3 unread replies</div>
+        </article>
+
+        <article class="course-card">
+          <div class="course-title">LIS 629 – Health Informatics</div>
+          <div class="course-meta">
+            Upcoming: Clinical Decision Support Systems
+          </div>
+        </article>
+      </div>
+
+      <button class="primary-btn" id="openReadingBtn">Open sample reading</button>
+    </div>
+  </section>
+
+  <!-- Reading View -->
+  <section class="view" id="readingView">
+    <div class="reading-shell" id="readingShell">
+
+      <!-- Slide-out menu -->
+      <aside class="slide-menu">
+        <h2>Navigation</h2>
+        <ul>
+          <li><button class="active" data-nav="courses">Courses</button></li>
+          <li><button data-nav="assignments">Assignments</button></li>
+          <li><button data-nav="annotations">My Annotations</button></li>
+          <li><button data-nav="profile">Profile</button></li>
+        </ul>
+      </aside>
+
+      <div class="reading-backdrop" id="readingBackdrop"></div>
+
+      <!-- Reading Toolbar -->
+      <header class="reading-toolbar">
+        <div class="toolbar-left">
+          <button class="hamburger" id="hamburgerBtn">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <div class="doc-title">Algorithmic Injustice and Social Systems</div>
+        </div>
+
+        <div class="toolbar-center">
+          <button class="toolbar-btn" id="zoomOutBtn">−</button>
+          <span id="zoomLevelLabel">100%</span>
+          <button class="toolbar-btn" id="zoomInBtn">+</button>
+          <button class="toolbar-btn" id="addAnnotationBtn" disabled>✎</button>
+        </div>
+
+        <div class="toolbar-right">
+          <div class="toolbar-profile" id="readingProfile">
+            TP
+            <span class="dot"></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Reading Layout -->
+      <div class="layout-reading">
+        <article class="reading-pane" id="readingPane">
+          <h2>Algorithmic Injustice and Social Systems</h2>
+          <div class="reading-meta">
+            Week 6 · 12 annotations · Last updated today at 3:42 PM
+          </div>
+          <div class="reading-body" id="readingContent">
+            <p>
+              In many contemporary systems, algorithms are deployed as seemingly neutral tools
+              for ranking, sorting, and classifying people...
+            </p>
+            <p>
+              Consider an algorithm that predicts which neighborhoods are most
+              likely to generate calls for police service...
+            </p>
+            <p>
+              A more just approach to design would treat social context as a core
+              requirement rather than an afterthought...
+            </p>
+          </div>
+        </article>
+
+        <!-- Annotations Sidebar -->
+        <aside class="annotations-pane">
+          <div class="annotations-header">
+            <h3>Annotations</h3>
+            <span class="badge"><span id="annotationCount">0</span> total</span>
+          </div>
+          <div id="annotationsList">
+            <div class="annotation-empty">Select text in the reading to annotate.</div>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Annotation Modal -->
+<div class="modal-backdrop" id="annotationModal">
+  <div class="modal">
+    <h3>New annotation</h3>
+    <div class="modal-label">Highlighted text</div>
+    <div class="modal-snippet" id="modalSnippet"></div>
+
+    <div class="modal-label">Your note</div>
+    <textarea id="modalTextarea" placeholder="Type your annotation here…"></textarea>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" id="cancelAnnotationBtn">Cancel</button>
+      <button class="btn-primary" id="saveAnnotationBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Javascript -->
+<script src="script.js"></script>
+</body>
+</html>
