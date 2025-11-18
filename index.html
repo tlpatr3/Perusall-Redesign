@@ -2,162 +2,203 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Perusall Minimal Prototype</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Link to CSS -->
+  <title>Perusall Redesign – Reading View</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
 </head>
-
 <body>
-<div class="app">
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar__inner">
+      <div class="topbar__left">
+        <button class="hamburger" aria-label="Open course menu" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-  <!-- Global nav -->
-  <header class="top-nav" id="globalNav">
-    <div class="logo">Perusall Minimal</div>
-    <nav class="nav-links">
-      <button class="nav-link active">Courses</button>
-      <button class="nav-link">Assignments</button>
-      <button class="nav-link">My Annotations</button>
-      <button class="nav-link">Profile</button>
-    </nav>
-    <div class="nav-right">
-      <div class="profile-badge" id="homeProfile">
-        TP
-        <span class="dot"></span>
+        <div class="hamburger-menu" aria-label="Course navigation" hidden>
+          <p class="hamburger-menu__label">Course menu</p>
+          <button class="hamburger-menu__item">Content</button>
+          <button class="hamburger-menu__item">Library</button>
+          <button class="hamburger-menu__item">Assignments</button>
+        </div>
+      </div>
+
+      <div class="topbar__center">
+        <span class="perusall-wordmark">Perusall</span>
+      </div>
+
+      <div class="topbar__right">
+        <button class="icon-btn" aria-label="Text settings">Aᵃ</button>
+        <button class="icon-btn" aria-label="Help">?</button>
+        <button class="icon-btn" aria-label="Search">🔍</button>
+        <button class="avatar" aria-label="Profile"></button>
       </div>
     </div>
   </header>
 
-  <!-- Dashboard View -->
-  <section class="view active" id="dashboardView">
-    <div class="home-inner">
-      <div class="home-title">Welcome back, Tiffany</div>
-      <div class="home-subtitle">
-        Review your courses and jump straight into this week’s reading.
+  <main class="shell">
+    <!-- Small course strip -->
+    <section class="course-strip">
+      <div class="course-strip__info">
+        <span class="course-strip__course">LIS 636 · Week 8</span>
+        <span class="course-strip__title">Algorithmic Injustice Reading</span>
       </div>
+      <button class="conversation-toggle" data-conversation-toggle>
+        Conversation
+      </button>
+    </section>
 
-      <div class="course-list">
-        <article class="course-card">
-          <div class="course-title">LIS 636 – Interaction Design</div>
-          <div class="course-meta">
-            Current reading: Algorithmic Injustice and Social Systems
+    <!-- Reading + conversation layout -->
+    <section class="reading-layout">
+      <!-- Reading pane -->
+      <article class="page">
+        <header class="page__header">
+          <p class="page__section-label">15.1 Introduction</p>
+          <h1 class="page__title">
+            Evaluating Systems in Real Settings
+          </h1>
+        </header>
+
+        <p>
+          Imagine that you have designed a new app to help a class keep track of a shared pet.
+          The app will schedule when the hamster goes home with each student, remind families
+          when to feed it, and record notes about its care. Both teachers and parents can see
+          the schedule and send messages to each other.
+        </p>
+
+        <p>
+          To understand whether this app works well in practice, you need to see how people
+          actually use it. Do families understand the schedule? Do students remember to check it?
+          Is the interface easy to read on phones as well as laptops? These questions are not
+          always answered by lab studies alone.
+        </p>
+
+        <p>
+          Many learning platforms already try to measure
+          <span class="reading-highlight" data-comment-ref="c1">
+            “engagement” through hidden formulas
+          </span>.
+          When students do not know how the score is calculated, they may focus on gaming the
+          system instead of understanding the material.
+        </p>
+
+        <p>
+          A more supportive design uses
+          <span class="reading-highlight" data-comment-ref="c2">
+            plain-language feedback
+          </span>
+          such as “You posted thoughtful comments, but replied to few peers this week.”
+          This kind of feedback connects the interface to specific actions students can take.
+        </p>
+
+        <p>
+          The interface also shapes how visible other voices are. When comments are buried in
+          cluttered side panels, discussion can disappear. Clear visual cues and a simple
+          conversation panel make it easier for students to
+          <span class="reading-highlight" data-comment-ref="c3">
+            build on one another’s ideas
+          </span>
+          instead of working in isolation.
+        </p>
+
+        <p class="page__hint">
+          Hover over a comment in the conversation drawer to see which part of the text it
+          belongs to.
+        </p>
+      </article>
+
+      <!-- Conversation drawer -->
+      <aside class="conversation" aria-label="Conversation panel">
+        <header class="conversation__header">
+          <h2>Current conversation</h2>
+          <div class="chip-row">
+            <button class="chip chip--active" data-comment-filter="all">All</button>
+            <button class="chip" data-comment-filter="mine">Mine</button>
+            <button class="chip" data-comment-filter="new">New</button>
           </div>
-          <div class="chip">3 unread replies</div>
-        </article>
+        </header>
 
-        <article class="course-card">
-          <div class="course-title">LIS 629 – Health Informatics</div>
-          <div class="course-meta">
-            Upcoming: Clinical Decision Support Systems
-          </div>
-        </article>
-      </div>
+        <div class="conversation__body">
+          <article class="comment"
+                   data-author="me"
+                   data-status="new"
+                   data-comment-id="c1">
+            <header class="comment__header">
+              <span class="comment__author">You</span>
+              <span class="comment__meta">New · paragraph 3</span>
+            </header>
+            <p class="comment__text">
+              This is exactly how Perusall can feel when we don’t know how engagement is scored.
+            </p>
+            <footer class="comment__footer">
+              <span class="comment__tag comment__tag--you">Your comment</span>
+            </footer>
+          </article>
 
-      <button class="primary-btn" id="openReadingBtn">Open sample reading</button>
-    </div>
-  </section>
+          <article class="comment"
+                   data-author="peer"
+                   data-status="read"
+                   data-comment-id="c2">
+            <header class="comment__header">
+              <span class="comment__author">Jordan</span>
+              <span class="comment__meta">Seen · paragraph 4</span>
+            </header>
+            <p class="comment__text">
+              The plain-language feedback idea would make grades feel less mysterious and easier
+              to act on.
+            </p>
+            <footer class="comment__footer">
+              <span class="comment__tag">Reply</span>
+            </footer>
+          </article>
 
-  <!-- Reading View -->
-  <section class="view" id="readingView">
-    <div class="reading-shell" id="readingShell">
+          <article class="comment"
+                   data-author="me"
+                   data-status="read"
+                   data-comment-id="c3">
+            <header class="comment__header">
+              <span class="comment__author">You</span>
+              <span class="comment__meta">Seen · paragraph 5</span>
+            </header>
+            <p class="comment__text">
+              I like the idea of the interface actively surfacing good conversations instead of
+              hiding them in a cluttered sidebar.
+            </p>
+            <footer class="comment__footer">
+              <span class="comment__tag comment__tag--you">Your comment</span>
+            </footer>
+          </article>
 
-      <!-- Slide-out menu -->
-      <aside class="slide-menu">
-        <h2>Navigation</h2>
-        <ul>
-          <li><button class="active" data-nav="courses">Courses</button></li>
-          <li><button data-nav="assignments">Assignments</button></li>
-          <li><button data-nav="annotations">My Annotations</button></li>
-          <li><button data-nav="profile">Profile</button></li>
-        </ul>
+          <article class="comment"
+                   data-author="peer"
+                   data-status="new"
+                   data-comment-id="c4">
+            <header class="comment__header">
+              <span class="comment__author">Instructor</span>
+              <span class="comment__meta">New · overall</span>
+            </header>
+            <p class="comment__text">
+              Think about how this redesign changes who feels invited to speak, and whose voices
+              might still be missing.
+            </p>
+            <footer class="comment__footer">
+              <span class="comment__tag comment__tag--instructor">Instructor note</span>
+            </footer>
+          </article>
+        </div>
       </aside>
+    </section>
+  </main>
 
-      <div class="reading-backdrop" id="readingBackdrop"></div>
-
-      <!-- Reading Toolbar -->
-      <header class="reading-toolbar">
-        <div class="toolbar-left">
-          <button class="hamburger" id="hamburgerBtn">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-          <div class="doc-title">Algorithmic Injustice and Social Systems</div>
-        </div>
-
-        <div class="toolbar-center">
-          <button class="toolbar-btn" id="zoomOutBtn">−</button>
-          <span id="zoomLevelLabel">100%</span>
-          <button class="toolbar-btn" id="zoomInBtn">+</button>
-          <button class="toolbar-btn" id="addAnnotationBtn" disabled>✎</button>
-        </div>
-
-        <div class="toolbar-right">
-          <div class="toolbar-profile" id="readingProfile">
-            TP
-            <span class="dot"></span>
-          </div>
-        </div>
-      </header>
-
-      <!-- Reading Layout -->
-      <div class="layout-reading">
-        <article class="reading-pane" id="readingPane">
-          <h2>Algorithmic Injustice and Social Systems</h2>
-          <div class="reading-meta">
-            Week 6 · 12 annotations · Last updated today at 3:42 PM
-          </div>
-          <div class="reading-body" id="readingContent">
-            <p>
-              In many contemporary systems, algorithms are deployed as seemingly neutral tools
-              for ranking, sorting, and classifying people...
-            </p>
-            <p>
-              Consider an algorithm that predicts which neighborhoods are most
-              likely to generate calls for police service...
-            </p>
-            <p>
-              A more just approach to design would treat social context as a core
-              requirement rather than an afterthought...
-            </p>
-          </div>
-        </article>
-
-        <!-- Annotations Sidebar -->
-        <aside class="annotations-pane">
-          <div class="annotations-header">
-            <h3>Annotations</h3>
-            <span class="badge"><span id="annotationCount">0</span> total</span>
-          </div>
-          <div id="annotationsList">
-            <div class="annotation-empty">Select text in the reading to annotate.</div>
-          </div>
-        </aside>
-
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- Annotation Modal -->
-<div class="modal-backdrop" id="annotationModal">
-  <div class="modal">
-    <h3>New annotation</h3>
-    <div class="modal-label">Highlighted text</div>
-    <div class="modal-snippet" id="modalSnippet"></div>
-
-    <div class="modal-label">Your note</div>
-    <textarea id="modalTextarea" placeholder="Type your annotation here…"></textarea>
-
-    <div class="modal-actions">
-      <button class="btn-ghost" id="cancelAnnotationBtn">Cancel</button>
-      <button class="btn-primary" id="saveAnnotationBtn">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- Javascript -->
-<script src="script.js"></script>
+  <footer class="footer">
+    <p>LIS 636 · Perusall Redesign Prototype</p>
+    <p class="footer__sub">Conceptual student project · Not affiliated with Perusall.</p>
+  </footer>
 </body>
 </html>
+
+
+
