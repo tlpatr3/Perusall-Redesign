@@ -2,203 +2,308 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Perusall Minimal Prototype</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Perusall Redesign – Reading View</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="script.js" defer></script>
 </head>
+
 <body>
-  <!-- Top bar -->
-  <header class="topbar">
-    <div class="topbar__inner">
-      <div class="topbar__left">
-        <button class="hamburger" aria-label="Open course menu" aria-expanded="false">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+<div class="app">
 
-        <div class="hamburger-menu" aria-label="Course navigation" hidden>
-          <p class="hamburger-menu__label">Course menu</p>
-          <button class="hamburger-menu__item">Content</button>
-          <button class="hamburger-menu__item">Library</button>
-          <button class="hamburger-menu__item">Assignments</button>
-        </div>
-      </div>
+  <!-- GLOBAL NAV (Dashboard only) -->
+  <header class="top-nav" id="globalNav">
+    <div class="logo">Perusall Minimal</div>
 
-      <div class="topbar__center">
-        <span class="perusall-wordmark">Perusall</span>
-      </div>
+    <nav class="nav-links" aria-label="Primary">
+      <button class="nav-link active" data-tab="coursesTab">Courses</button>
+      <button class="nav-link" data-tab="assignmentsTab">Assignments</button>
+      <button class="nav-link" data-tab="myAnnotationsTab">My Annotations</button>
+      <button class="nav-link" data-tab="profileTab">Profile</button>
+    </nav>
 
-      <div class="topbar__right">
-        <button class="icon-btn" aria-label="Text settings">Aᵃ</button>
-        <button class="icon-btn" aria-label="Help">?</button>
-        <button class="icon-btn" aria-label="Search">🔍</button>
-        <button class="avatar" aria-label="Profile"></button>
+    <div class="nav-right">
+      <div class="profile-badge" id="homeProfile" title="Profile">
+        TP
+        <span class="dot"></span>
       </div>
     </div>
   </header>
 
-  <main class="shell">
-    <!-- Small course strip -->
-    <section class="course-strip">
-      <div class="course-strip__info">
-        <span class="course-strip__course">ICT 605-201 · Final Project Part B</span>
-        <span class="course-strip__title">Algorithmic Injustice Reading</span>
-      </div>
-      <button class="conversation-toggle" data-conversation-toggle>
-        Conversation
-      </button>
-    </section>
+  <!-- DASHBOARD VIEW -->
+  <section class="view active" id="dashboardView">
 
-    <!-- Reading + conversation layout -->
-    <section class="reading-layout">
-      <!-- Reading pane -->
-      <article class="page">
-        <header class="page__header">
-          <p class="page__section-label">15.1 Introduction</p>
-          <h1 class="page__title">
-            Evaluating Systems in Real Settings
-          </h1>
-        </header>
+    <!-- COURSES TAB -->
+    <div class="dash-tab active" id="coursesTab">
+      <div class="home-inner">
+        <div class="home-title">Welcome back, Tiffany</div>
+        <div class="home-subtitle">
+          Review your courses and jump straight into this week’s reading and annotations.
+        </div>
 
-        <p>
-          Imagine that you have designed a new app to help a class keep track of a shared pet.
-          The app will schedule when the hamster goes home with each student, remind families
-          when to feed it, and record notes about its care. Both teachers and parents can see
-          the schedule and send messages to each other.
-        </p>
-
-        <p>
-          To understand whether this app works well in practice, you need to see how people
-          actually use it. Do families understand the schedule? Do students remember to check it?
-          Is the interface easy to read on phones as well as laptops? These questions are not
-          always answered by lab studies alone.
-        </p>
-
-        <p>
-          Many learning platforms already try to measure
-          <span class="reading-highlight" data-comment-ref="c1">
-            “engagement” through hidden formulas
-          </span>.
-          When students do not know how the score is calculated, they may focus on gaming the
-          system instead of understanding the material.
-        </p>
-
-        <p>
-          A more supportive design uses
-          <span class="reading-highlight" data-comment-ref="c2">
-            plain-language feedback
-          </span>
-          such as “You posted thoughtful comments, but replied to few peers this week.”
-          This kind of feedback connects the interface to specific actions students can take.
-        </p>
-
-        <p>
-          The interface also shapes how visible other voices are. When comments are buried in
-          cluttered side panels, discussion can disappear. Clear visual cues and a simple
-          conversation panel make it easier for students to
-          <span class="reading-highlight" data-comment-ref="c3">
-            build on one another’s ideas
-          </span>
-          instead of working in isolation.
-        </p>
-
-        <p class="page__hint">
-          Hover over a comment in the conversation drawer to see which part of the text it
-          belongs to.
-        </p>
-      </article>
-
-      <!-- Conversation drawer -->
-      <aside class="conversation" aria-label="Conversation panel">
-        <header class="conversation__header">
-          <h2>Current conversation</h2>
-          <div class="chip-row">
-            <button class="chip chip--active" data-comment-filter="all">All</button>
-            <button class="chip" data-comment-filter="mine">Mine</button>
-            <button class="chip" data-comment-filter="new">New</button>
-          </div>
-        </header>
-
-        <div class="conversation__body">
-          <article class="comment"
-                   data-author="me"
-                   data-status="new"
-                   data-comment-id="c1">
-            <header class="comment__header">
-              <span class="comment__author">You</span>
-              <span class="comment__meta">New · paragraph 3</span>
-            </header>
-            <p class="comment__text">
-              This is exactly how Perusall can feel when we don’t know how engagement is scored.
-            </p>
-            <footer class="comment__footer">
-              <span class="comment__tag comment__tag--you">Your comment</span>
-            </footer>
+        <div class="course-list">
+          <article class="course-card">
+            <div class="course-title">ICT 605 – Interaction Design</div>
+            <div class="course-meta">
+              Current reading: Algorithmic Injustice and Social Systems
+            </div>
+            <div class="chip">3 unread replies</div>
           </article>
 
-          <article class="comment"
-                   data-author="peer"
-                   data-status="read"
-                   data-comment-id="c2">
-            <header class="comment__header">
-              <span class="comment__author">Jordan</span>
-              <span class="comment__meta">Seen · paragraph 4</span>
-            </header>
-            <p class="comment__text">
-              The plain-language feedback idea would make grades feel less mysterious and easier
-              to act on.
-            </p>
-            <footer class="comment__footer">
-              <span class="comment__tag">Reply</span>
-            </footer>
-          </article>
-
-          <article class="comment"
-                   data-author="me"
-                   data-status="read"
-                   data-comment-id="c3">
-            <header class="comment__header">
-              <span class="comment__author">You</span>
-              <span class="comment__meta">Seen · paragraph 5</span>
-            </header>
-            <p class="comment__text">
-              I like the idea of the interface actively surfacing good conversations instead of
-              hiding them in a cluttered sidebar.
-            </p>
-            <footer class="comment__footer">
-              <span class="comment__tag comment__tag--you">Your comment</span>
-            </footer>
-          </article>
-
-          <article class="comment"
-                   data-author="peer"
-                   data-status="new"
-                   data-comment-id="c4">
-            <header class="comment__header">
-              <span class="comment__author">Instructor</span>
-              <span class="comment__meta">New · overall</span>
-            </header>
-            <p class="comment__text">
-              Think about how this redesign changes who feels invited to speak, and whose voices
-              might still be missing.
-            </p>
-            <footer class="comment__footer">
-              <span class="comment__tag comment__tag--instructor">Instructor note</span>
-            </footer>
+          <article class="course-card">
+            <div class="course-title">ICT 605 - 201</div>
+            <div class="course-meta">
+              Upcoming: UX Design
+            </div>
           </article>
         </div>
-      </aside>
-    </section>
-  </main>
 
-  <footer class="footer">
-    <p>ICT 605 · Perusall Redesign Prototype</p>
-    <p class="footer__sub">Conceptual student project · Not affiliated with Perusall.</p>
-  </footer>
+        <button class="primary-btn" id="openReadingBtn">
+          Open sample reading
+        </button>
+      </div>
+    </div>
+
+    <!-- ASSIGNMENTS TAB -->
+    <div class="dash-tab" id="assignmentsTab">
+      <div class="home-inner">
+        <div class="home-title">Assignments</div>
+        <div class="home-subtitle">A simplified list with only what’s due soon.</div>
+
+        <div class="simple-list">
+          <div class="simple-item">
+            <div class="simple-title">Week 6 Reading Annotations</div>
+            <div class="simple-meta">Due in 2 days · 2/4 comments complete</div>
+          </div>
+          <div class="simple-item">
+            <div class="simple-title">Week 7 Discussion Replies</div>
+            <div class="simple-meta">Due next week</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY ANNOTATIONS TAB -->
+    <div class="dash-tab" id="myAnnotationsTab">
+      <div class="home-inner">
+        <div class="home-title">My Annotations</div>
+        <div class="home-subtitle">Your highlights and notes across readings.</div>
+        <div class="simple-list" id="dashMyAnnotationsList">
+          <div class="simple-empty">No saved annotations yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div class="dash-tab" id="profileTab">
+      <div class="home-inner">
+        <div class="home-title">Profile</div>
+        <div class="home-subtitle">Participation summary in plain language.</div>
+
+        <div class="profile-block">
+          <div><strong>Name:</strong> Tiffany Patrick</div>
+          <div><strong>Engagement:</strong> On track</div>
+          <div><strong>This week:</strong> 2 annotations, 1 reply</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- READING VIEW (FOCUS MODE) -->
+  <section class="view" id="readingView">
+    <div class="reading-shell" id="readingShell">
+
+      <!-- Centered toolbar -->
+      <header class="reading-toolbar">
+        <div class="toolbar-inner">
+
+          <div class="toolbar-row top">
+            <button class="back-link" id="backToDashboardBtn">← Courses</button>
+
+            <div class="toolbar-right">
+              <button class="icon-btn" id="notificationsBtn" aria-label="Notifications" title="Notifications">
+                🔔
+                <span class="notif-badge" id="notifBadge">0</span>
+              </button>
+
+              <div class="toolbar-profile" id="readingProfile" title="Profile">
+                TP
+                <span class="dot"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="toolbar-row middle">
+            <div class="doc-title">15.1 Introduction</div>
+          </div>
+
+          <div class="toolbar-row bottom">
+            <div class="toolbar-controls">
+              <button class="toolbar-btn" id="zoomOutBtn" aria-label="Zoom out">−</button>
+              <span id="zoomLevelLabel">100%</span>
+              <button class="toolbar-btn" id="zoomInBtn" aria-label="Zoom in">+</button>
+
+              <div class="toolbar-spacer"></div>
+
+              <button class="toolbar-btn" id="addAnnotationBtn" disabled title="Add annotation">
+                ✎
+              </button>
+
+              <button class="toolbar-btn" id="toggleDrawerBtn" title="Show annotations">
+                💬
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- Main reading area -->
+      <main class="reading-main">
+        <article class="reading-pane" id="readingPane">
+
+          <!-- Textbook scan image -->
+          <figure class="scan-figure">
+            <img
+              src="textbook-scan.jpg"
+              alt="Textbook scan page"
+              class="scan-img"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+            />
+            <div class="scan-fallback">
+              (Add your textbook scan image here by naming it <strong>textbook-scan.jpg</strong>
+              or updating the img src.)
+            </div>
+            <figcaption class="scan-caption">Scanned textbook page view (as Perusall presents it).</figcaption>
+          </figure>
+
+          <div class="reading-meta-bar">
+            <span class="reading-meta">Week 6 · 12 annotations · Last updated today at 3:42 PM</span>
+          </div>
+
+          <h1 class="reading-title">15.1 Introduction</h1>
+
+          <!-- This text is highlightable -->
+          <div class="reading-body" id="readingContent">
+            <p>
+           Imagine that you have designed a new app to allow school children ages 9 or 10 and their parents to share caring for 
+           the class hamster over the school holidays. The app will schedule which children are responsible for the hamster and when, 
+           and it will also record when it is fed. The app will also provide detailed instructions about when the hamster is scheduled 
+           to go to another family and the arrangements about when and where it will be handed over. In addition, both teachers and parents 
+           will be able to acces the schedule and send and leave messages for each other. How would you find out whether the children, their
+           teacher, and their parents can use the app effectively and whether it is satisfying to use? What evaluation methods would you employ?
+           </p>
+          <p>
+            In this chapter, we describe evaluation studies that take place in a spectrum of settings, from controlled laboratories to natural
+            settings. Within this range we focus on the following:
+          </p>
+          <p>
+          <ul>
+            <li>Usability testing, which takes place in usability labs and other controlled lab-like settings</li>
+            <li>Experiments, which take place in research labs</li>
+            <li>Field Studies, which take place in natural settings, such as people's homes, schools, work, and leisure environments</li>
+          </ul>
+          </p>
+          </div>
+        </article>
+      </main>
+
+      <!-- Annotations drawer (focus mode) -->
+      <aside class="annotations-drawer" id="annotationsDrawer" aria-label="Annotations">
+        <header class="drawer-header">
+          <h2>Annotations</h2>
+          <button class="drawer-close" id="closeDrawerBtn">×</button>
+        </header>
+
+        <div class="drawer-nav">
+          <button class="drawer-link active" data-drawer="drawerCourses">Courses</button>
+          <button class="drawer-link" data-drawer="drawerAssignments">Assignments</button>
+          <button class="drawer-link" data-drawer="drawerMyAnnotations">My Annotations</button>
+          <button class="drawer-link" data-drawer="drawerProfile">Profile</button>
+        </div>
+
+        <div class="drawer-body">
+
+          <!-- Drawer sections -->
+          <section class="drawer-section active" id="drawerCourses">
+            <div class="drawer-summary">
+              <span class="badge"><span id="annotationCount">0</span> total</span>
+              <span class="hint">Highlight text, then click ✎ to add a note.</span>
+            </div>
+
+            <div id="annotationsList">
+              <div class="annotation-empty">
+                No annotations yet.
+              </div>
+            </div>
+          </section>
+
+          <section class="drawer-section" id="drawerAssignments">
+            <div class="simple-list">
+              <div class="simple-item">
+                <div class="simple-title">Week 6 Reading Annotations</div>
+                <div class="simple-meta">Due in 2 days</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="drawer-section" id="drawerMyAnnotations">
+            <div id="drawerMyAnnotationsList">
+              <div class="simple-empty">No saved annotations yet.</div>
+            </div>
+          </section>
+
+          <section class="drawer-section" id="drawerProfile">
+            <div class="profile-block">
+              <div><strong>Engagement:</strong> On track</div>
+              <div><strong>Notes this week:</strong> 0</div>
+              <div><strong>Replies this week:</strong> 0</div>
+            </div>
+          </section>
+
+        </div>
+      </aside>
+
+      <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+      <!-- Notifications popover -->
+      <div class="notifications-popover" id="notificationsPopover" role="dialog" aria-modal="false">
+        <div class="notif-header">
+          <strong>Notifications</strong>
+          <button class="notif-close" id="notifCloseBtn">×</button>
+        </div>
+        <div class="notif-list" id="notifList">
+          <div class="notif-empty">No notifications yet.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<!-- Annotation modal -->
+<div class="modal-backdrop" id="annotationModal">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3>New annotation</h3>
+
+    <div class="modal-label">Highlighted text</div>
+    <div class="modal-snippet" id="modalSnippet"></div>
+
+    <div class="modal-label">Your note</div>
+    <textarea id="modalTextarea" placeholder="Type your annotation here…"></textarea>
+
+    <div class="modal-actions">
+      <button class="btn-ghost" id="cancelAnnotationBtn">Cancel</button>
+      <button class="btn-primary" id="saveAnnotationBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
+
 
 
 
