@@ -468,7 +468,7 @@ document.addEventListener("DOMContentLoaded", () => {
     author: "Tiffany Patrick",
     timeLabel: "Yesterday · 8:14 PM",
     replies: 2,
-    highlightPhrase: "Usability testing",
+    highlightPhrase: "usability labs",
   });
 
   createAnnotation({
@@ -479,7 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
     author: "Tiffany Patrick",
     timeLabel: "Today · 9:02 AM",
     replies: 1,
-    highlightPhrase: "Field studies",
+    highlightPhrase: "which take place in natural",
   });
 
   addNotification({
