@@ -6,17 +6,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const backToDashboardBtn = document.getElementById("backToDashboardBtn");
 
   function showDashboardView() {
-    if (dashboardView && readingView) {
-      dashboardView.classList.add("active");
-      readingView.classList.remove("active");
-    }
+    if (!dashboardView || !readingView) return;
+    dashboardView.classList.add("active");
+    readingView.classList.remove("active");
   }
 
   function showReadingView() {
-    if (dashboardView && readingView) {
-      dashboardView.classList.remove("active");
-      readingView.classList.add("active");
-    }
+    if (!dashboardView || !readingView) return;
+    dashboardView.classList.remove("active");
+    readingView.classList.add("active");
   }
 
   if (openReadingBtn) openReadingBtn.addEventListener("click", showReadingView);
@@ -29,6 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
   navLinks.forEach((btn) => {
     btn.addEventListener("click", () => {
       const targetId = btn.dataset.tab;
+
+      // Always go back to dashboard when using global tabs
+      showDashboardView();
 
       navLinks.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
@@ -94,22 +95,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const annotations = [];
   const notifications = [];
 
-  // Track selection within the reading pane
-  if (readingContent) {
-    readingContent.addEventListener("mouseup", () => {
+  /* --- text selection (desktop + mobile) --- */
+  if (readingContent && addAnnotationBtn) {
+    document.addEventListener("selectionchange", () => {
       const selection = window.getSelection();
-      const text = selection && selection.toString().trim();
+      if (!selection || selection.isCollapsed) {
+        currentSelectionText = "";
+        addAnnotationBtn.disabled = true;
+        return;
+      }
 
-      if (
-        text &&
-        selection.anchorNode &&
-              readingContent.contains(selection.anchorNode)
-      ) {
+      const range = selection.getRangeAt(0);
+      if (!readingContent.contains(range.commonAncestorContainer)) {
+        currentSelectionText = "";
+        addAnnotationBtn.disabled = true;
+        return;
+      }
+
+      const text = selection.toString().trim();
+      if (text.length > 0) {
         currentSelectionText = text;
-        if (addAnnotationBtn) addAnnotationBtn.disabled = false;
+        addAnnotationBtn.disabled = false;
       } else {
         currentSelectionText = "";
-        if (addAnnotationBtn) addAnnotationBtn.disabled = true;
+        addAnnotationBtn.disabled = true;
       }
     });
   }
@@ -156,7 +165,14 @@ document.addEventListener("DOMContentLoaded", () => {
     readingContent.innerHTML = replaced;
   }
 
-  function createAnnotation({ snippet, note, author, timeLabel, replies, highlightPhrase }) {
+  function createAnnotation({
+    snippet,
+    note,
+    author,
+    timeLabel,
+    replies,
+    highlightPhrase,
+  }) {
     const id = `a_${Date.now()}_${Math.random().toString(16).slice(2)}`;
     const annotation = {
       id,
@@ -168,7 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     annotations.push(annotation);
 
-    // Only example/seed annotations pass highlightPhrase
     if (highlightPhrase) {
       highlightPhraseOnce(highlightPhrase, id);
     }
@@ -204,7 +219,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const left = document.createElement("span");
           left.textContent = `By ${a.author}`;
           const right = document.createElement("span");
-          right.textContent = `${a.replies} repl${a.replies === 1 ? "y" : "ies"} · ${a.timeLabel}`;
+          right.textContent = `${a.replies} repl${a.replies === 1 ? "y" : "ies"} · ${
+            a.timeLabel
+          }`;
           meta.append(left, right);
 
           const body = document.createElement("div");
@@ -272,11 +289,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
           const title = document.createElement("div");
           title.className = "simple-title";
-          title.textContent = "Week 8 · Testing";
+          title.textContent = "Week 8 · 15.1 Introduction";
 
           const meta = document.createElement("div");
           meta.className = "simple-meta";
-          meta.textContent = `${a.note.slice(0, 60)}${a.note.length > 60 ? "…" : ""}`;
+          meta.textContent = `${a.note.slice(0, 60)}${
+            a.note.length > 60 ? "…" : ""
+          }`;
 
           item.append(title, meta);
           dashMyAnnotationsList.appendChild(item);
@@ -303,10 +322,11 @@ document.addEventListener("DOMContentLoaded", () => {
       currentSelectionText = "";
       if (addAnnotationBtn) addAnnotationBtn.disabled = true;
       closeAnnotationModal();
+      window.getSelection()?.removeAllRanges();
     });
   }
 
-  // Clicking a highlighted span: behave like Perusall (open drawer + jump to annotation)
+  // Clicking a highlighted span → open drawer + jump to annotation
   if (readingContent) {
     readingContent.addEventListener("click", (e) => {
       const target = e.target.closest(".highlight[data-annotation-id]");
@@ -316,7 +336,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       openDrawer();
 
-      // Switch drawer to "My annotations" for clarity
       const drawerNavBtn = document.querySelector(
         '.drawer-link[data-drawer="drawerMyAnnotations"]'
       );
@@ -459,44 +478,45 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* ===== SEED EXAMPLE DATA (Perusall-style) ===== */
+  /* ===== SEED EXAMPLE DATA ===== */
   createAnnotation({
     snippet:
-      "usability labs",
+      "Usability testing",
     note:
-      "I’m wondering whether kids would feel nervous in a lab setting and if that would change how they interact with the interface.",
+      "I wonder if usability testing in a lab setting would give us enough insights for this app, or if we’d need to do field studies as well? It seems like the kids might be behave differently in a lab setting, and that might affect the results",
     author: "Tiffany Patrick",
     timeLabel: "Yesterday · 8:14 PM",
     replies: 2,
-    highlightPhrase: "usability labs",
+    highlightPhrase: "Usability testing",
   });
 
   createAnnotation({
     snippet:
-      "which take place in natural",
+      "Field studies",
     note:
-      "This seems more realistic for our hamster app idea, since we care about how kids actually use it with their families.",
+      "This list makes me think we’d start with usability testing for obvious issues, then maybe a small field study when the kids actually use the hamster app over break.",
     author: "Tiffany Patrick",
     timeLabel: "Today · 9:02 AM",
     replies: 1,
-    highlightPhrase: "which take place in natural",
+    highlightPhrase: "Field studies",
   });
 
   addNotification({
-    title: "Cleophas replied to your note",
-    body: "“Good point about kids feeling nervous in the lab – maybe we can frame it as a game.”",
+    title: "Jay replied to your note",
+    body: "“Good point about mixing lab studies with field studies for the hamster app.”",
     time: "1 hr ago",
   });
 
   addNotification({
     title: "Instructor highlighted your annotation",
-    body: "Your field study comment was marked as a helpful example for the class.",
+    body: "Your ‘evaluation methods’ comment was marked as an example for the class.",
     time: "Earlier today",
   });
 
   renderAnnotations();
   renderNotifications();
 });
+
 
 
 

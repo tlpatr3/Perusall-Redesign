@@ -3,7 +3,7 @@
   --bg-elevated: #ffffff;
   --surface: #ffffff;
   --card: #ffffff;
-  --accent: #ec407a;           
+  --accent: #ec407a;
   --accent-soft: #fde7ef;
   --border: #e5d2d8;
   --border-subtle: #f4dfe5;
@@ -61,7 +61,7 @@ body {
   padding: 6px 14px;
   margin-bottom: 16px;
   background: #ffffff;
-  box-shadow: 0 10px 30px rgba(148, 163, 184, 0.20);
+  box-shadow: 0 10px 30px rgba(148, 163, 184, 0.2);
   border: 1px solid rgba(248, 208, 218, 0.9);
 }
 
@@ -442,7 +442,6 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-
   background: #ffffff;
   color: #4b5563;
   border: 1px solid #f4c8d7;
@@ -465,11 +464,11 @@ body {
   text-align: center;
 }
 
+/* Reading layout & pane */
+
 .reading-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.3fr);
-  gap: 10px;
-  align-items: flex-start;
+  position: relative;
+  display: block;
 }
 
 .reading-pane {
@@ -511,7 +510,21 @@ body {
   margin-bottom: 0;
 }
 
-/* Highlighted snippet like Perusall */
+#readingContent ul {
+  margin: 8px 0 10px 1.2rem;
+  padding: 0;
+}
+
+.scan-img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 16px auto 4px;
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.18);
+}
+
+/* Highlighted snippet */
 
 .highlight {
   background: var(--highlight);
@@ -522,15 +535,28 @@ body {
   cursor: pointer;
 }
 
-/* Drawer */
+/* Drawer overlay */
 
 .drawer {
-  position: relative;
-  border-radius: 22px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(360px, 85vw);
+  height: 100%;
+  border-radius: 22px 0 0 22px;
   padding: 12px 12px 10px;
   background: #fff7fa;
-  border: 1px solid #f4c8d7;
-  min-height: 260px;
+  border-left: 1px solid #f4c8d7;
+  border-top: 1px solid #f4c8d7;
+  border-bottom: 1px solid #f4c8d7;
+  box-shadow: -10px 0 30px rgba(15, 23, 42, 0.18);
+  transform: translateX(100%);
+  transition: transform 0.2s ease-out;
+  z-index: 20;
+}
+
+.reading-shell.drawer-open .drawer {
+  transform: translateX(0);
 }
 
 .drawer-header {
@@ -563,6 +589,8 @@ body {
 
 .drawer-body {
   font-size: 0.8rem;
+  max-height: calc(100% - 40px);
+  overflow: auto;
 }
 
 .drawer-section {
@@ -574,8 +602,18 @@ body {
 }
 
 .drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--backdrop);
   display: none;
+  z-index: 18;
 }
+
+.reading-shell.drawer-open .drawer-backdrop {
+  display: block;
+}
+
+/* Annotation cards */
 
 .annotation-card {
   border-radius: 14px;
@@ -794,41 +832,43 @@ textarea::placeholder {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .reading-layout {
-    grid-template-columns: minmax(0, 1fr);
+  .top-nav {
+    flex-wrap: wrap;
+    gap: 8px;
+    height: auto;
+  }
+
+  .nav-tabs {
+    flex: 1 0 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .nav-link {
+    flex: 0 1 auto;
+  }
+
+  .reading-shell {
+    padding: 10px 10px 12px;
+  }
+
+  .reading-pane {
+    max-height: none;
   }
 
   .drawer {
-    position: absolute;
-    inset: auto 0 0;
-    border-radius: 18px 18px 0 0;
-    transform: translateY(100%);
-    transition: transform 0.18s ease-out;
-    z-index: 20;
-  }
-
-  .reading-shell.drawer-open .drawer {
-    transform: translateY(0);
-  }
-
-  .drawer-backdrop {
-    position: absolute;
-    inset: 0;
-    background: var(--backdrop);
-    display: none;
-    z-index: 18;
-  }
-
-  .reading-shell.drawer-open .drawer-backdrop {
-    display: block;
+    width: 100%;
+    height: 60%;
+    border-radius: 22px 22px 0 0;
+    bottom: 0;
+    top: auto;
   }
 }
 
 @media (min-width: 881px) {
-  .drawer-backdrop {
-    display: none;
-  }
+  /* drawer-backdrop already controlled by .drawer-open */
 }
+
 
 
 
