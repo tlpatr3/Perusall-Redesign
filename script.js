@@ -483,7 +483,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   addNotification({
-    title: "Jay replied to your note",
+    title: "Cleophas replied to your note",
     body: "“Good point about kids feeling nervous in the lab – maybe we can frame it as a game.”",
     time: "1 hr ago",
   });
