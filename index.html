@@ -2,307 +2,300 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Perusall Minimal Prototype</title>
+  <title>Perusall Redesign Prototype</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
 <div class="app">
 
-  <!-- GLOBAL NAV (Dashboard only) -->
+  <!-- GLOBAL NAV -->
   <header class="top-nav" id="globalNav">
-    <div class="logo">Perusall Minimal</div>
+    <div class="logo">Perusall · Prototype</div>
 
-    <nav class="nav-links" aria-label="Primary">
-      <button class="nav-link active" data-tab="coursesTab">Courses</button>
-      <button class="nav-link" data-tab="assignmentsTab">Assignments</button>
+    <nav class="nav-tabs" aria-label="Primary">
+      <button class="nav-link active" data-tab="overviewTab">Overview</button>
       <button class="nav-link" data-tab="myAnnotationsTab">My Annotations</button>
-      <button class="nav-link" data-tab="profileTab">Profile</button>
+      <button class="nav-link" data-tab="activityTab">Activity</button>
     </nav>
 
-    <div class="nav-right">
-      <div class="profile-badge" id="homeProfile" title="Profile">
-        TP
-        <span class="dot"></span>
-      </div>
+    <div class="nav-actions">
+      <button class="icon-btn" id="notificationsBtn">
+        🔔
+        <span class="badge" id="notifBadge"></span>
+      </button>
+      <div class="profile" id="homeProfile">TP</div>
     </div>
   </header>
 
-  <!-- DASHBOARD VIEW -->
-  <section class="view active" id="dashboardView">
+  <main class="main">
+    <!-- DASHBOARD VIEW (tabs inside) -->
+    <section class="view active" id="dashboardView">
 
-    <!-- COURSES TAB -->
-    <div class="dash-tab active" id="coursesTab">
-      <div class="home-inner">
-        <div class="home-title">Welcome back, Tiffany</div>
-        <div class="home-subtitle">
-          Review your courses and jump straight into this week’s reading and annotations.
-        </div>
+      <!-- OVERVIEW TAB -->
+      <div class="dash-tab active" id="overviewTab">
+        <div class="dash-layout">
+          <section class="card dash-main">
+            <h1>Calm overview of your week</h1>
+            <p class="muted">
+              Just the key readings, due dates, and engagement – no noise.
+            </p>
 
-        <div class="course-list">
-          <article class="course-card">
-            <div class="course-title">ICT 605 – Interaction Design</div>
-            <div class="course-meta">
-              Current reading: Agile UX Design
-            </div>
-            <div class="chip">3 unread replies</div>
-          </article>
+            <div class="dash-grid">
+              <div class="dash-section">
+                <h2>Current readings</h2>
+                <ul class="reading-list">
+                  <li>
+                    <div class="reading-label">
+                      <span class="status-dot danger"></span>
+                      Week 8 · Interaction design
+                    </div>
+                    <div class="reading-meta">Due in 2 days · 5 unread comments</div>
+                  </li>
+                  <li>
+                    <div class="reading-label">
+                      <span class="status-dot warn"></span>
+                      Week 7 · Usability testing
+                    </div>
+                    <div class="reading-meta">Due today · 1 unread comment</div>
+                  </li>
+                  <li>
+                    <div class="reading-label">
+                      <span class="status-dot okay"></span>
+                      Week 6 · Ethics & codes
+                    </div>
+                    <div class="reading-meta">Done · 0 unread comments</div>
+                  </li>
+                </ul>
 
-          <article class="course-card">
-            <div class="course-title">ICT 605 - 201</div>
-            <div class="course-meta">
-              Upcoming: UX Design for Fools
-            </div>
-          </article>
-        </div>
+                <button class="btn-primary mt" id="openReadingBtn">
+                  Open Week 8 reading
+                </button>
+              </div>
 
-        <button class="primary-btn" id="openReadingBtn">
-          Open sample reading
-        </button>
-      </div>
-    </div>
+              <div class="dash-section">
+                <h2>Engagement</h2>
+                <div class="engagement-card">
+                  <div class="engagement-main">
+                    <div class="engagement-label">Engagement score</div>
+                    <div class="engagement-value">84%</div>
+                  </div>
+                  <dl class="engagement-details">
+                    <div>
+                      <dt>Reading time</dt><dd>Solid</dd>
+                    </div>
+                    <div>
+                      <dt>Comment quality</dt><dd>Strong</dd>
+                    </div>
+                    <div>
+                      <dt>Replies to peers</dt><dd>Low</dd>
+                    </div>
+                  </dl>
+                </div>
 
-    <!-- ASSIGNMENTS TAB -->
-    <div class="dash-tab" id="assignmentsTab">
-      <div class="home-inner">
-        <div class="home-title">Assignments</div>
-        <div class="home-subtitle">A simplified list with only what’s due soon.</div>
-
-        <div class="simple-list">
-          <div class="simple-item">
-            <div class="simple-title">Week 6 Reading Annotations</div>
-            <div class="simple-meta">Due in 2 days · 2/4 comments complete</div>
-          </div>
-          <div class="simple-item">
-            <div class="simple-title">Week 7 Discussion Replies</div>
-            <div class="simple-meta">Due next week</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MY ANNOTATIONS TAB -->
-    <div class="dash-tab" id="myAnnotationsTab">
-      <div class="home-inner">
-        <div class="home-title">My Annotations</div>
-        <div class="home-subtitle">Your highlights and notes across readings.</div>
-        <div class="simple-list" id="dashMyAnnotationsList">
-          <div class="simple-empty">No saved annotations yet.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PROFILE TAB -->
-    <div class="dash-tab" id="profileTab">
-      <div class="home-inner">
-        <div class="home-title">Profile</div>
-        <div class="home-subtitle">Participation summary in plain language.</div>
-
-        <div class="profile-block">
-          <div><strong>Name:</strong> Tiffany Patrick</div>
-          <div><strong>Engagement:</strong> On track</div>
-          <div><strong>This week:</strong> 2 annotations, 1 reply</div>
-        </div>
-      </div>
-    </div>
-
-  </section>
-
-  <!-- READING VIEW (FOCUS MODE) -->
-  <section class="view" id="readingView">
-    <div class="reading-shell" id="readingShell">
-
-      <!-- Centered toolbar -->
-      <header class="reading-toolbar">
-        <div class="toolbar-inner">
-
-          <div class="toolbar-row top">
-            <button class="back-link" id="backToDashboardBtn">← Courses</button>
-
-            <div class="toolbar-right">
-              <button class="icon-btn" id="notificationsBtn" aria-label="Notifications" title="Notifications">
-                🔔
-                <span class="notif-badge" id="notifBadge">0</span>
-              </button>
-
-              <div class="toolbar-profile" id="readingProfile" title="Profile">
-                TP
-                <span class="dot"></span>
+                <div class="requirements">
+                  <div class="requirement">
+                    <div class="req-label">Comments</div>
+                    <div class="req-value">8 / 12</div>
+                    <div class="req-meta">Add 4 more comments to finish.</div>
+                  </div>
+                  <div class="requirement">
+                    <div class="req-label">Questions</div>
+                    <div class="req-value">1 / 3</div>
+                    <div class="req-meta">Ask 2 “I’m confused about…” questions.</div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div class="toolbar-row middle">
-            <div class="doc-title">15.1 Introduction</div>
-          </div>
-
-          <div class="toolbar-row bottom">
-            <div class="toolbar-controls">
-              <button class="toolbar-btn" id="zoomOutBtn" aria-label="Zoom out">−</button>
-              <span id="zoomLevelLabel">100%</span>
-              <button class="toolbar-btn" id="zoomInBtn" aria-label="Zoom in">+</button>
-
-              <div class="toolbar-spacer"></div>
-
-              <button class="toolbar-btn" id="addAnnotationBtn" disabled title="Add annotation">
-                ✎
-              </button>
-
-              <button class="toolbar-btn" id="toggleDrawerBtn" title="Show annotations">
-                💬
-              </button>
-            </div>
-          </div>
-
+          </section>
         </div>
-      </header>
+      </div>
 
-      <!-- Main reading area -->
-      <main class="reading-main">
-        <article class="reading-pane" id="readingPane">
+      <!-- MY ANNOTATIONS TAB -->
+      <div class="dash-tab" id="myAnnotationsTab">
+        <section class="card">
+          <h1>My annotations</h1>
+          <p class="muted small">
+            All of your notes for this course in one place.
+          </p>
+          <div id="dashMyAnnotationsList"></div>
+        </section>
+      </div>
 
-          <!-- Textbook scan image -->
-          <figure class="scan-figure">
-            <img
-              src="textbook-scan.jpg"
-              alt="Textbook scan page"
-              class="scan-img"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
-            />
-            <div class="scan-fallback">
-              (Add your textbook scan image here by naming it <strong>textbook-scan.jpg</strong>
-              or updating the img src.)
+      <!-- ACTIVITY TAB -->
+      <div class="dash-tab" id="activityTab">
+        <section class="card">
+          <h1>Activity</h1>
+          <p class="muted small">
+            A focused view of your engagement and course requirements.
+          </p>
+
+          <div class="engagement-card">
+            <div class="engagement-main">
+              <div class="engagement-label">Engagement score</div>
+              <div class="engagement-value">84%</div>
             </div>
-            <figcaption class="scan-caption">Scanned textbook page view (as Perusall presents it).</figcaption>
-          </figure>
-
-          <div class="reading-meta-bar">
-            <span class="reading-meta">Week 6 · 12 annotations · Last updated today at 3:42 PM</span>
+            <dl class="engagement-details">
+              <div>
+                <dt>Reading time</dt><dd>Solid</dd>
+              </div>
+              <div>
+                <dt>Comment quality</dt><dd>Strong</dd>
+              </div>
+              <div>
+                <dt>Replies to peers</dt><dd>Low</dd>
+              </div>
+            </dl>
           </div>
 
-          <h1 class="reading-title">15.1 Introduction</h1>
-
-          <!-- This text is highlightable -->
-          <div class="reading-body" id="readingContent">
-            <p>
-           Imagine that you have designed a new app to allow school children ages 9 or 10 and their parents to share caring for 
-           the class hamster over the school holidays. The app will schedule which children are responsible for the hamster and when, 
-           and it will also record when it is fed. The app will also provide detailed instructions about when the hamster is scheduled 
-           to go to another family and the arrangements about when and where it will be handed over. In addition, both teachers and parents 
-           will be able to acces the schedule and send and leave messages for each other. How would you find out whether the children, their
-           teacher, and their parents can use the app effectively and whether it is satisfying to use? What evaluation methods would you employ?
-           </p>
-          <p>
-            In this chapter, we describe evaluation studies that take place in a spectrum of settings, from controlled laboratories to natural
-            settings. Within this range we focus on the following:
-          </p>
-          <p>
-          <ul>
-            <li>Usability testing, which takes place in usability labs and other controlled lab-like settings</li>
-            <li>Experiments, which take place in research labs</li>
-            <li>Field Studies, which take place in natural settings, such as people's homes, schools, work, and leisure environments</li>
-          </ul>
-          </p>
+          <div class="requirements" style="margin-top:12px;">
+            <div class="requirement">
+              <div class="req-label">Comments</div>
+              <div class="req-value">8 / 12</div>
+              <div class="req-meta">Add 4 more comments to finish.</div>
+            </div>
+            <div class="requirement">
+              <div class="req-label">Questions</div>
+              <div class="req-value">1 / 3</div>
+              <div class="req-meta">Ask 2 “I’m confused about…” questions.</div>
+            </div>
           </div>
-        </article>
-      </main>
+        </section>
+      </div>
+    </section>
 
-      <!-- Annotations drawer (focus mode) -->
-      <aside class="annotations-drawer" id="annotationsDrawer" aria-label="Annotations">
-        <header class="drawer-header">
-          <h2>Annotations</h2>
-          <button class="drawer-close" id="closeDrawerBtn">×</button>
+    <!-- READING VIEW -->
+    <section class="view" id="readingView">
+      <div class="reading-shell" id="readingShell">
+        <header class="reading-toolbar">
+          <button class="back-link" id="backToDashboardBtn">← Courses</button>
+
+          <div class="reading-title">
+            <div class="eyebrow">Week 8 · Interaction design</div>
+            <h1>15.1 Evaluating Children’s Interfaces</h1>
+          </div>
+
+          <div class="toolbar-controls">
+            <button class="toolbar-btn" id="zoomOutBtn" aria-label="Zoom out">−</button>
+            <span class="zoom-label" id="zoomLevelLabel">100%</span>
+            <button class="toolbar-btn" id="zoomInBtn" aria-label="Zoom in">+</button>
+
+            <button class="toolbar-btn" id="addAnnotationBtn" disabled title="Add annotation">
+              ✎
+            </button>
+            <button class="toolbar-btn" id="toggleDrawerBtn" title="Open comments">
+              💬
+            </button>
+
+            <div class="profile small" id="readingProfile">TP</div>
+          </div>
         </header>
 
-        <div class="drawer-nav">
-          <button class="drawer-link active" data-drawer="drawerCourses">Courses</button>
-          <button class="drawer-link" data-drawer="drawerAssignments">Assignments</button>
-          <button class="drawer-link" data-drawer="drawerMyAnnotations">My Annotations</button>
-          <button class="drawer-link" data-drawer="drawerProfile">Profile</button>
-        </div>
-
-        <div class="drawer-body">
-
-          <!-- Drawer sections -->
-          <section class="drawer-section active" id="drawerCourses">
-            <div class="drawer-summary">
-              <span class="badge"><span id="annotationCount">0</span> total</span>
-              <span class="hint">Highlight text, then click ✎ to add a note.</span>
+        <div class="reading-layout">
+          <article class="reading-pane">
+            <div class="page-meta">
+              <div class="page-label">Textbook scan · Chapter 15</div>
+              <div class="page-page">p. 312</div>
             </div>
+            <div class="page-body" id="readingContent">
+              <!-- You can replace this with your real excerpt.
+                   Keep “Usability testing” and “Field studies” in here
+                   so the example highlights can still lock on. -->
+              <p>
+                When evaluating technologies for children, researchers and practitioners often
+                choose between different study approaches depending on the questions they want
+                to answer and the constraints of the project.
+              </p>
+              <p>
+                <strong>Usability testing</strong> in controlled lab-like settings is useful
+                for understanding fine-grained interaction problems and for observing how
+                children respond to specific interface elements such as buttons, animations,
+                or feedback sounds. A small group of children is usually invited into the lab,
+                where the facilitator can closely watch what works and what breaks down.
+              </p>
+              <p>
+                <strong>Field studies</strong> in natural settings such as homes, schools,
+                and after-school programs help researchers see how technologies fit into the
+                messy realities of children’s everyday routines, peer interactions, and family
+                expectations. In these studies, the technology is used over time, and the
+                researcher focuses on patterns of use rather than single interactions.
+              </p>
+              <p>
+                In many projects, teams mix these approaches: a quick round of usability
+                testing to catch obvious breakdowns, followed by longer field work that reveals
+                more subtle issues such as long-term engagement, sharing patterns with siblings
+                and friends, or how much help children need from adults to use the system.
+              </p>
+            </div>
+          </article>
 
-            <div id="annotationsList">
-              <div class="annotation-empty">
-                No annotations yet.
+          <aside class="drawer" id="annotationDrawer">
+            <div class="drawer-header">
+              <div class="drawer-tabs">
+                <button class="drawer-link active" data-drawer="drawerCourse">Course</button>
+                <button class="drawer-link" data-drawer="drawerMyAnnotations">My annotations</button>
               </div>
+              <button class="icon-btn small" id="closeDrawerBtn">✕</button>
             </div>
-          </section>
 
-          <section class="drawer-section" id="drawerAssignments">
-            <div class="simple-list">
-              <div class="simple-item">
-                <div class="simple-title">Week 6 Reading Annotations</div>
-                <div class="simple-meta">Due in 2 days</div>
-              </div>
+            <div class="drawer-body">
+              <section class="drawer-section active" id="drawerCourse">
+                <h2>Comments on this page</h2>
+                <div id="annotationsList"></div>
+              </section>
+
+              <section class="drawer-section" id="drawerMyAnnotations">
+                <h2>
+                  My annotations
+                  <span class="pill" id="annotationCount">0</span>
+                </h2>
+                <div id="drawerMyAnnotationsList"></div>
+              </section>
             </div>
-          </section>
+          </aside>
 
-          <section class="drawer-section" id="drawerMyAnnotations">
-            <div id="drawerMyAnnotationsList">
-              <div class="simple-empty">No saved annotations yet.</div>
-            </div>
-          </section>
-
-          <section class="drawer-section" id="drawerProfile">
-            <div class="profile-block">
-              <div><strong>Engagement:</strong> On track</div>
-              <div><strong>Notes this week:</strong> 0</div>
-              <div><strong>Replies this week:</strong> 0</div>
-            </div>
-          </section>
-
-        </div>
-      </aside>
-
-      <div class="drawer-backdrop" id="drawerBackdrop"></div>
-
-      <!-- Notifications popover -->
-      <div class="notifications-popover" id="notificationsPopover" role="dialog" aria-modal="false">
-        <div class="notif-header">
-          <strong>Notifications</strong>
-          <button class="notif-close" id="notifCloseBtn">×</button>
-        </div>
-        <div class="notif-list" id="notifList">
-          <div class="notif-empty">No notifications yet.</div>
+          <div class="drawer-backdrop" id="drawerBackdrop"></div>
         </div>
       </div>
+    </section>
+  </main>
 
+  <!-- NOTIFICATIONS POPOVER -->
+  <div class="popover" id="notificationsPopover">
+    <div class="popover-header">
+      <div class="popover-title">Notifications</div>
+      <button class="icon-btn small" id="notifCloseBtn">✕</button>
     </div>
-  </section>
+    <div class="popover-body" id="notifList"></div>
+  </div>
 
-</div>
-
-<!-- Annotation modal -->
-<div class="modal-backdrop" id="annotationModal">
-  <div class="modal" role="dialog" aria-modal="true">
-    <h3>New annotation</h3>
-
-    <div class="modal-label">Highlighted text</div>
-    <div class="modal-snippet" id="modalSnippet"></div>
-
-    <div class="modal-label">Your note</div>
-    <textarea id="modalTextarea" placeholder="Type your annotation here…"></textarea>
-
-    <div class="modal-actions">
-      <button class="btn-ghost" id="cancelAnnotationBtn">Cancel</button>
-      <button class="btn-primary" id="saveAnnotationBtn">Save</button>
+  <!-- ADD ANNOTATION MODAL -->
+  <div class="modal" id="annotationModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel">
+      <h2>Add a note</h2>
+      <p class="muted small">
+        You’re commenting on:
+      </p>
+      <p class="snippet" id="modalSnippet"></p>
+      <label class="field">
+        <span class="field-label">Your comment</span>
+        <textarea id="modalTextarea" rows="4" placeholder="What are you noticing or wondering?"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="cancelAnnotationBtn">Cancel</button>
+        <button class="btn-primary" id="saveAnnotationBtn">Save</button>
+      </div>
     </div>
   </div>
-</div>
+
+</div> <!-- /.app -->
 
 <script src="script.js"></script>
 </body>
 </html>
+
+
 
 
 

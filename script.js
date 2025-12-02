@@ -1,39 +1,35 @@
 document.addEventListener("DOMContentLoaded", () => {
-  /* === VIEW SWITCHING === */
+  /* ===== VIEW SWITCHING (dashboard vs reading) ===== */
   const dashboardView = document.getElementById("dashboardView");
   const readingView = document.getElementById("readingView");
   const openReadingBtn = document.getElementById("openReadingBtn");
   const backToDashboardBtn = document.getElementById("backToDashboardBtn");
 
-  const navLinks = document.querySelectorAll(".nav-link");
-  const dashTabs = document.querySelectorAll(".dash-tab");
-
-  const homeProfile = document.getElementById("homeProfile");
-  const readingProfile = document.getElementById("readingProfile");
-
-  
-
   function showDashboardView() {
-    readingView.classList.remove("active");
-    dashboardView.classList.add("active");
+    if (dashboardView && readingView) {
+      dashboardView.classList.add("active");
+      readingView.classList.remove("active");
+    }
   }
 
   function showReadingView() {
-    dashboardView.classList.remove("active");
-    readingView.classList.add("active");
+    if (dashboardView && readingView) {
+      dashboardView.classList.remove("active");
+      readingView.classList.add("active");
+    }
   }
 
-  if (openReadingBtn) {
-    openReadingBtn.addEventListener("click", showReadingView);
-  }
-  if (backToDashboardBtn) {
-    backToDashboardBtn.addEventListener("click", showDashboardView);
-  }
+  if (openReadingBtn) openReadingBtn.addEventListener("click", showReadingView);
+  if (backToDashboardBtn) backToDashboardBtn.addEventListener("click", showDashboardView);
 
-  // top-nav tabs on the dashboard
+  /* ===== DASHBOARD TABS (Overview / My Annotations / Activity) ===== */
+  const navLinks = document.querySelectorAll(".nav-link");
+  const dashTabs = document.querySelectorAll(".dash-tab");
+
   navLinks.forEach((btn) => {
     btn.addEventListener("click", () => {
       const targetId = btn.dataset.tab;
+
       navLinks.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
 
@@ -43,25 +39,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  /* === ZOOM CONTROLS === */
+  /* ===== ZOOM CONTROLS ===== */
   const zoomOutBtn = document.getElementById("zoomOutBtn");
   const zoomInBtn = document.getElementById("zoomInBtn");
   const zoomLevelLabel = document.getElementById("zoomLevelLabel");
+  const root = document.documentElement;
 
-  let zoomLevel = 100; // percent
+  let zoomPercent = 100; // 80–140%
 
   function applyZoom() {
-    const scale = zoomLevel / 100;
-    document.documentElement.style.setProperty("--reading-scale", scale);
+    const scale = zoomPercent / 100;
+    root.style.setProperty("--reading-font-size", `${scale}rem`);
     if (zoomLevelLabel) {
-      zoomLevelLabel.textContent = `${zoomLevel}%`;
+      zoomLevelLabel.textContent = `${zoomPercent}%`;
     }
   }
 
   if (zoomInBtn) {
     zoomInBtn.addEventListener("click", () => {
-      if (zoomLevel < 140) {
-        zoomLevel += 10;
+      if (zoomPercent < 140) {
+        zoomPercent += 10;
         applyZoom();
       }
     });
@@ -69,16 +66,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (zoomOutBtn) {
     zoomOutBtn.addEventListener("click", () => {
-      if (zoomLevel > 80) {
-        zoomLevel -= 10;
+      if (zoomPercent > 80) {
+        zoomPercent -= 10;
         applyZoom();
       }
     });
   }
 
-  applyZoom(); // set initial
+  applyZoom();
 
-  /* === ANNOTATIONS: selection + modal === */
+  /* ===== ANNOTATION CORE ===== */
   const readingContent = document.getElementById("readingContent");
   const addAnnotationBtn = document.getElementById("addAnnotationBtn");
 
@@ -97,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const annotations = [];
   const notifications = [];
 
-  // Detect text selection inside the reading content
+  // Track selection within the reading pane
   if (readingContent) {
     readingContent.addEventListener("mouseup", () => {
       const selection = window.getSelection();
@@ -106,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (
         text &&
         selection.anchorNode &&
-        readingContent.contains(selection.anchorNode)
+              readingContent.contains(selection.anchorNode)
       ) {
         currentSelectionText = text;
         if (addAnnotationBtn) addAnnotationBtn.disabled = false;
@@ -119,10 +116,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function openAnnotationModal() {
     if (!currentSelectionText || !annotationModal) return;
-    modalSnippet.textContent = currentSelectionText;
-    modalTextarea.value = "";
+    if (modalSnippet) modalSnippet.textContent = currentSelectionText;
+    if (modalTextarea) modalTextarea.value = "";
     annotationModal.classList.add("active");
-    modalTextarea.focus();
+    if (modalTextarea) modalTextarea.focus();
   }
 
   function closeAnnotationModal() {
@@ -130,16 +127,11 @@ document.addEventListener("DOMContentLoaded", () => {
     annotationModal.classList.remove("active");
   }
 
-  if (addAnnotationBtn) {
-    addAnnotationBtn.addEventListener("click", openAnnotationModal);
-  }
-  if (cancelAnnotationBtn) {
-    cancelAnnotationBtn.addEventListener("click", closeAnnotationModal);
-  }
-
+  if (addAnnotationBtn) addAnnotationBtn.addEventListener("click", openAnnotationModal);
+  if (cancelAnnotationBtn) cancelAnnotationBtn.addEventListener("click", closeAnnotationModal);
   if (annotationModal) {
     annotationModal.addEventListener("click", (e) => {
-      if (e.target === annotationModal) {
+      if (e.target.classList.contains("modal-backdrop")) {
         closeAnnotationModal();
       }
     });
@@ -150,19 +142,39 @@ document.addEventListener("DOMContentLoaded", () => {
     return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
   }
 
-  function createAnnotation({ snippet, note, author, timeLabel, replies }) {
+  function highlightPhraseOnce(phrase, annotationId) {
+    if (!readingContent || !phrase) return;
+    const html = readingContent.innerHTML;
+    const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(escaped);
+    if (!re.test(html)) return;
+
+    const replaced = html.replace(
+      re,
+      `<span class="highlight" data-annotation-id="${annotationId}">$&</span>`
+    );
+    readingContent.innerHTML = replaced;
+  }
+
+  function createAnnotation({ snippet, note, author, timeLabel, replies, highlightPhrase }) {
     const id = `a_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-    annotations.push({
+    const annotation = {
       id,
       snippet,
       note,
       author: author || "You",
       timeLabel: timeLabel || "Just now",
       replies: replies || 0,
-    });
+    };
+    annotations.push(annotation);
+
+    // Only example/seed annotations pass highlightPhrase
+    if (highlightPhrase) {
+      highlightPhraseOnce(highlightPhrase, id);
+    }
+
     renderAnnotations();
 
-    // if it's your new note, also add a gentle notification
     if (!timeLabel || timeLabel === "Just now") {
       addNotification({
         title: "Note saved",
@@ -173,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderAnnotations() {
-    // Drawer "Courses" section list
+    // Drawer “Course” section
     if (annotationsList) {
       annotationsList.innerHTML = "";
       if (!annotations.length) {
@@ -185,6 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
         annotations.forEach((a) => {
           const card = document.createElement("article");
           card.className = "annotation-card";
+          card.dataset.annotationId = a.id;
 
           const meta = document.createElement("div");
           meta.className = "annotation-meta";
@@ -208,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Drawer "My Annotations" section
+    // Drawer “My annotations”
     if (drawerMyAnnotationsList) {
       drawerMyAnnotationsList.innerHTML = "";
       if (!annotations.length) {
@@ -220,13 +233,14 @@ document.addEventListener("DOMContentLoaded", () => {
         annotations.forEach((a) => {
           const card = document.createElement("article");
           card.className = "annotation-card";
+          card.dataset.annotationId = a.id;
 
           const meta = document.createElement("div");
           meta.className = "annotation-meta";
           const left = document.createElement("span");
           left.textContent = a.timeLabel;
           const right = document.createElement("span");
-          right.textContent = "Chapter 15.1";
+          right.textContent = "Week 8";
           meta.append(left, right);
 
           const body = document.createElement("div");
@@ -243,13 +257,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Dashboard "My Annotations" tab list
+    // Dashboard “My annotations” tab
     if (dashMyAnnotationsList) {
       dashMyAnnotationsList.innerHTML = "";
       if (!annotations.length) {
         const empty = document.createElement("div");
         empty.className = "simple-empty";
-        empty.textContent = "No saved annotations yet.";
+        empty.textContent = "No saved annotations for this course yet.";
         dashMyAnnotationsList.appendChild(empty);
       } else {
         annotations.forEach((a) => {
@@ -258,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           const title = document.createElement("div");
           title.className = "simple-title";
-          title.textContent = "15.1 Introduction";
+          title.textContent = "Week 8 · Evaluating children’s interfaces";
 
           const meta = document.createElement("div");
           meta.className = "simple-meta";
@@ -270,23 +284,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Update count badge in drawer
     if (annotationCountLabel) {
-      annotationCountLabel.textContent = annotations.length.toString();
-    }
-
-    // Update profile mini-summary in drawer
-    const profileNotesLine = document.querySelector(
-      "#drawerProfile .profile-block div:nth-child(2)"
-    );
-    if (profileNotesLine) {
-      profileNotesLine.innerHTML = `<strong>Notes this week:</strong> ${annotations.length}`;
+      annotationCountLabel.textContent = String(annotations.length);
     }
   }
 
   if (saveAnnotationBtn) {
     saveAnnotationBtn.addEventListener("click", () => {
-      const noteText = modalTextarea.value.trim();
+      const noteText = modalTextarea ? modalTextarea.value.trim() : "";
       if (!noteText || !currentSelectionText) {
         closeAnnotationModal();
         return;
@@ -301,7 +306,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* === ANNOTATION DRAWER OPEN/CLOSE === */
+  // Clicking a highlighted span: behave like Perusall (open drawer + jump to annotation)
+  if (readingContent) {
+    readingContent.addEventListener("click", (e) => {
+      const target = e.target.closest(".highlight[data-annotation-id]");
+      if (!target) return;
+      const annotationId = target.getAttribute("data-annotation-id");
+      if (!annotationId) return;
+
+      openDrawer();
+
+      // Switch drawer to "My annotations" for clarity
+      const drawerNavBtn = document.querySelector(
+        '.drawer-link[data-drawer="drawerMyAnnotations"]'
+      );
+      if (drawerNavBtn) drawerNavBtn.click();
+
+      const cards = document.querySelectorAll(".annotation-card");
+      cards.forEach((c) => c.classList.remove("is-selected"));
+      const targetCard = document.querySelector(
+        `.annotation-card[data-annotation-id="${annotationId}"]`
+      );
+      if (targetCard) {
+        targetCard.classList.add("is-selected");
+        targetCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    });
+  }
+
+  /* ===== DRAWER OPEN/CLOSE ===== */
   const readingShell = document.getElementById("readingShell");
   const toggleDrawerBtn = document.getElementById("toggleDrawerBtn");
   const closeDrawerBtn = document.getElementById("closeDrawerBtn");
@@ -310,12 +343,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const drawerSections = document.querySelectorAll(".drawer-section");
 
   function openDrawer() {
-    if (!readingShell) return;
-    readingShell.classList.add("drawer-open");
+    if (readingShell) {
+      readingShell.classList.add("drawer-open");
+    }
   }
+
   function closeDrawer() {
-    if (!readingShell) return;
-    readingShell.classList.remove("drawer-open");
+    if (readingShell) {
+      readingShell.classList.remove("drawer-open");
+    }
   }
 
   if (toggleDrawerBtn) toggleDrawerBtn.addEventListener("click", openDrawer);
@@ -327,14 +363,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const targetId = btn.dataset.drawer;
       drawerLinks.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
-
       drawerSections.forEach((sec) => {
         sec.classList.toggle("active", sec.id === targetId);
       });
     });
   });
 
-  /* === NOTIFICATIONS === */
+  /* ===== NOTIFICATIONS ===== */
   const notificationsBtn = document.getElementById("notificationsBtn");
   const notificationsPopover = document.getElementById("notificationsPopover");
   const notifCloseBtn = document.getElementById("notifCloseBtn");
@@ -342,21 +377,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const notifBadge = document.getElementById("notifBadge");
 
   function renderNotifications() {
-    // badge + profile dots
     const count = notifications.length;
     if (notifBadge) {
-      notifBadge.textContent = count.toString();
+      notifBadge.textContent = String(count);
       notifBadge.classList.toggle("show", count > 0);
-    }
-    if (homeProfile) {
-      homeProfile.classList.toggle("has-notifications", count > 0);
-    }
-    if (readingProfile) {
-      readingProfile.classList.toggle("has-notifications", count > 0);
     }
 
     if (!notifList) return;
-
     notifList.innerHTML = "";
     if (!notifications.length) {
       const empty = document.createElement("div");
@@ -384,13 +411,11 @@ document.addEventListener("DOMContentLoaded", () => {
       item.append(title, body, time);
 
       item.addEventListener("click", () => {
-        // clicking a notification opens the drawer on "My Annotations"
         openDrawer();
-        drawerLinks.forEach((b) => {
-          if (b.dataset.drawer === "drawerMyAnnotations") {
-            b.click();
-          }
-        });
+        const drawerNavBtn = document.querySelector(
+          '.drawer-link[data-drawer="drawerMyAnnotations"]'
+        );
+        if (drawerNavBtn) drawerNavBtn.click();
       });
 
       notifList.appendChild(item);
@@ -423,7 +448,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Close notifications when clicking outside
   document.addEventListener("click", (e) => {
     if (
       notificationsPopover &&
@@ -435,41 +459,47 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* === SEED EXAMPLE DATA === */
-
-  // Example annotations (comments)
+  /* ===== SEED EXAMPLE DATA (Perusall-style) ===== */
   createAnnotation({
-    snippet: "usability testing",
-    note: "I wonder if the kids would actually enjoy being 'tested' like this or if it needs to be framed as a game.",
+    snippet:
+      "observing how children respond",
+    note:
+      "I’m wondering whether kids would feel nervous in a lab setting and if that would change how they interact with the interface.",
     author: "Tiffany Patrick",
     timeLabel: "Yesterday · 8:14 PM",
     replies: 2,
+    highlightPhrase: "Usability testing",
   });
 
   createAnnotation({
-    snippet: "Field Studies, which take place in natural settings",
-    note: "This sounds most realistic for the hamster app, since families would actually be at home with the pet.",
+    snippet:
+      "natural settings such as homes, schools, and after-school programs.",
+    note:
+      "This seems more realistic for our hamster app idea, since we care about how kids actually use it with their families.",
     author: "Tiffany Patrick",
     timeLabel: "Today · 9:02 AM",
     replies: 1,
+    highlightPhrase: "Field studies",
   });
 
-  // Example notifications
   addNotification({
     title: "Jay replied to your note",
-    body: "“Good point about making the evaluation feel like a game for kids.”",
+    body: "“Good point about kids feeling nervous in the lab – maybe we can frame it as a game.”",
     time: "1 hr ago",
   });
 
   addNotification({
     title: "Instructor highlighted your annotation",
-    body: "Your comment on field studies was marked as a helpful example.",
+    body: "Your field study comment was marked as a helpful example for the class.",
     time: "Earlier today",
   });
 
   renderAnnotations();
   renderNotifications();
 });
+
+
+
 
 
 
