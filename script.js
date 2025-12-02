@@ -1,412 +1,476 @@
-// ================================
-// DASHBOARD TABS (menus link now)
-// ================================
-const navLinks = document.querySelectorAll(".nav-link");
-const dashTabs = document.querySelectorAll(".dash-tab");
+document.addEventListener("DOMContentLoaded", () => {
+  /* === VIEW SWITCHING === */
+  const dashboardView = document.getElementById("dashboardView");
+  const readingView = document.getElementById("readingView");
+  const openReadingBtn = document.getElementById("openReadingBtn");
+  const backToDashboardBtn = document.getElementById("backToDashboardBtn");
 
-navLinks.forEach(btn => {
-  btn.addEventListener("click", () => {
-    navLinks.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+  const navLinks = document.querySelectorAll(".nav-link");
+  const dashTabs = document.querySelectorAll(".dash-tab");
 
-    const tabId = btn.dataset.tab;
-    dashTabs.forEach(t => t.classList.remove("active"));
-    document.getElementById(tabId).classList.add("active");
-  });
-});
+  const homeProfile = document.getElementById("homeProfile");
+  const readingProfile = document.getElementById("readingProfile");
 
-// ================================
-// VIEW SWITCHING (Dashboard ↔ Reading)
-// ================================
-const dashboardView = document.getElementById("dashboardView");
-const readingView = document.getElementById("readingView");
-const globalNav = document.getElementById("globalNav");
-const openReadingBtn = document.getElementById("openReadingBtn");
-const backToDashboardBtn = document.getElementById("backToDashboardBtn");
+  
 
-openReadingBtn.addEventListener("click", () => {
-  dashboardView.classList.remove("active");
-  readingView.classList.add("active");
-  globalNav.style.display = "none";
-  window.getSelection().removeAllRanges();
-});
-
-backToDashboardBtn.addEventListener("click", () => {
-  readingView.classList.remove("active");
-  dashboardView.classList.add("active");
-  globalNav.style.display = "flex";
-  closeDrawer();
-  closeNotifications();
-});
-
-// ================================
-// DRAWER TOGGLE (focus mode)
-// ================================
-const readingShell = document.getElementById("readingShell");
-const toggleDrawerBtn = document.getElementById("toggleDrawerBtn");
-const closeDrawerBtn = document.getElementById("closeDrawerBtn");
-const drawerBackdrop = document.getElementById("drawerBackdrop");
-
-function openDrawer() { readingShell.classList.add("drawer-open"); }
-function closeDrawer() { readingShell.classList.remove("drawer-open"); }
-
-toggleDrawerBtn.addEventListener("click", () => {
-  readingShell.classList.contains("drawer-open") ? closeDrawer() : openDrawer();
-});
-closeDrawerBtn.addEventListener("click", closeDrawer);
-drawerBackdrop.addEventListener("click", closeDrawer);
-
-// Drawer nav sections
-const drawerLinks = document.querySelectorAll(".drawer-link");
-const drawerSections = document.querySelectorAll(".drawer-section");
-
-drawerLinks.forEach(btn => {
-  btn.addEventListener("click", () => {
-    drawerLinks.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    const sectionId = btn.dataset.drawer;
-    drawerSections.forEach(s => s.classList.remove("active"));
-    document.getElementById(sectionId).classList.add("active");
-  });
-});
-
-// ================================
-// ZOOM CONTROLS (works now)
-// ================================
-const zoomOutBtn = document.getElementById("zoomOutBtn");
-const zoomInBtn = document.getElementById("zoomInBtn");
-const zoomLevelLabel = document.getElementById("zoomLevelLabel");
-
-let zoomLevel = 100;
-
-function applyZoom() {
-  const scale = zoomLevel / 100;
-  document.documentElement.style.setProperty("--reading-scale", scale);
-  zoomLevelLabel.textContent = zoomLevel + "%";
-  zoomOutBtn.disabled = zoomLevel <= 80;
-  zoomInBtn.disabled = zoomLevel >= 140;
-}
-
-zoomOutBtn.addEventListener("click", () => {
-  if (zoomLevel > 80) { zoomLevel -= 10; applyZoom(); }
-});
-zoomInBtn.addEventListener("click", () => {
-  if (zoomLevel < 140) { zoomLevel += 10; applyZoom(); }
-});
-
-// ================================
-// ANNOTATION SYSTEM (highlight + save works)
-// ================================
-const readingContent = document.getElementById("readingContent");
-const addAnnotationBtn = document.getElementById("addAnnotationBtn");
-
-const modal = document.getElementById("annotationModal");
-const modalSnippet = document.getElementById("modalSnippet");
-const modalTextarea = document.getElementById("modalTextarea");
-const cancelAnnotationBtn = document.getElementById("cancelAnnotationBtn");
-const saveAnnotationBtn = document.getElementById("saveAnnotationBtn");
-
-const annotationsList = document.getElementById("annotationsList");
-const annotationCount = document.getElementById("annotationCount");
-
-const dashMyAnnotationsList = document.getElementById("dashMyAnnotationsList");
-const drawerMyAnnotationsList = document.getElementById("drawerMyAnnotationsList");
-
-let currentRange = null;
-let currentSelectionText = "";
-const annotations = [];
-const notifications = [];
-
-// Track selection more reliably
-function updateSelectionState() {
-  const sel = window.getSelection();
-  if (!sel || sel.rangeCount === 0) return clearSelectionState();
-
-  const range = sel.getRangeAt(0);
-  let container = range.commonAncestorContainer;
-  const selectedText = sel.toString().trim();
-
-  if (container.nodeType === Node.TEXT_NODE) container = container.parentNode;
-
-  if (!readingContent.contains(container) || selectedText.length === 0) {
-    return clearSelectionState();
+  function showDashboardView() {
+    readingView.classList.remove("active");
+    dashboardView.classList.add("active");
   }
 
-  currentRange = range;
-  currentSelectionText = selectedText;
-  addAnnotationBtn.disabled = false;
-}
-
-function clearSelectionState() {
-  currentRange = null;
-  currentSelectionText = "";
-  addAnnotationBtn.disabled = true;
-}
-
-// Update on mouseup/keyup inside reading for best reliability
-readingContent.addEventListener("mouseup", updateSelectionState);
-readingContent.addEventListener("keyup", updateSelectionState);
-document.addEventListener("selectionchange", () => {
-  if (readingView.classList.contains("active")) updateSelectionState();
-});
-
-// Modal helpers
-function openModal() {
-  modalSnippet.textContent = currentSelectionText;
-  modalTextarea.value = "";
-  modal.classList.add("active");
-  modalTextarea.focus();
-}
-function closeModal() { modal.classList.remove("active"); }
-
-// Open modal with ✎
-addAnnotationBtn.addEventListener("click", () => {
-  if (!currentRange || !currentSelectionText) return;
-  openModal();
-});
-cancelAnnotationBtn.addEventListener("click", closeModal);
-
-// Save annotation
-saveAnnotationBtn.addEventListener("click", () => {
-  const note = modalTextarea.value.trim();
-  if (!note) return alert("Please enter a note for your annotation.");
-
-  // Wrap selection in highlight span
-  const span = document.createElement("span");
-  span.className = "highlight";
-  span.dataset.annotationId = String(annotations.length);
-
-  try {
-    currentRange.surroundContents(span);
-  } catch (e) {
-    console.warn("Surround failed; selection crossed elements.", e);
-    // Still saves annotation even if highlight fails
+  function showReadingView() {
+    dashboardView.classList.remove("active");
+    readingView.classList.add("active");
   }
 
-  const timestamp = new Date().toLocaleString([], {
-    month: "short", day: "numeric", hour: "numeric", minute: "2-digit"
+  if (openReadingBtn) {
+    openReadingBtn.addEventListener("click", showReadingView);
+  }
+  if (backToDashboardBtn) {
+    backToDashboardBtn.addEventListener("click", showDashboardView);
+  }
+
+  // top-nav tabs on the dashboard
+  navLinks.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.dataset.tab;
+      navLinks.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      dashTabs.forEach((tab) => {
+        tab.classList.toggle("active", tab.id === targetId);
+      });
+    });
   });
 
-  const annotation = {
-    id: annotations.length,
-    text: note,
-    snippet: currentSelectionText,
-    author: "You",
-    time: timestamp,
-    replies: []
-  };
+  /* === ZOOM CONTROLS === */
+  const zoomOutBtn = document.getElementById("zoomOutBtn");
+  const zoomInBtn = document.getElementById("zoomInBtn");
+  const zoomLevelLabel = document.getElementById("zoomLevelLabel");
 
-  annotations.push(annotation);
-  renderAnnotations();
-  renderMyAnnotationsPanels();
-  clearSelectionState();
-  closeModal();
+  let zoomLevel = 100; // percent
 
-  // Demo: simulate a classmate reply notification on first annotation
-  if (annotations.length === 1) {
-    simulateReplyNotification(annotation.id);
-  }
-});
-
-// Render annotations in drawer
-function renderAnnotations() {
-  annotationsList.innerHTML = "";
-  annotationCount.textContent = annotations.length;
-
-  if (annotations.length === 0) {
-    annotationsList.innerHTML = `<div class="annotation-empty">No annotations yet.</div>`;
-    return;
-  }
-
-  annotations.forEach((ann) => {
-    const card = document.createElement("div");
-    card.className = "annotation-card";
-    card.id = `ann-card-${ann.id}`;
-
-    const meta = document.createElement("div");
-    meta.className = "annotation-meta";
-    meta.innerHTML = `<span>${ann.author}</span><span>${ann.time}</span>`;
-
-    const body = document.createElement("div");
-    body.className = "annotation-body";
-    body.textContent = ann.text;
-
-    const snippet = document.createElement("div");
-    snippet.className = "annotation-snippet";
-    snippet.textContent = ann.snippet;
-
-    const actions = document.createElement("div");
-    actions.className = "annotation-actions";
-
-    const replyBtn = document.createElement("button");
-    replyBtn.className = "link-btn";
-    replyBtn.textContent = "Reply";
-    actions.appendChild(replyBtn);
-
-    const replyBlock = document.createElement("div");
-    replyBlock.className = "reply-block";
-    replyBlock.style.display = "none";
-
-    const replyTextarea = document.createElement("textarea");
-    replyTextarea.className = "reply-textarea";
-    replyTextarea.placeholder = "Write a reply…";
-
-    const replyActions = document.createElement("div");
-    replyActions.style.display = "flex";
-    replyActions.style.justifyContent = "flex-end";
-    replyActions.style.gap = "0.4rem";
-
-    const replyCancel = document.createElement("button");
-    replyCancel.className = "btn-ghost";
-    replyCancel.style.fontSize = "0.78rem";
-    replyCancel.textContent = "Cancel";
-
-    const replySave = document.createElement("button");
-    replySave.className = "btn-primary";
-    replySave.style.fontSize = "0.78rem";
-    replySave.textContent = "Post";
-
-    replyActions.append(replyCancel, replySave);
-    replyBlock.append(replyTextarea, replyActions);
-
-    const repliesList = document.createElement("div");
-    repliesList.className = "reply-meta";
-
-    function refreshReplies() {
-      repliesList.textContent = ann.replies
-        .map((r) => `${r.author} · ${r.text}`)
-        .join("   ·   ");
+  function applyZoom() {
+    const scale = zoomLevel / 100;
+    document.documentElement.style.setProperty("--reading-scale", scale);
+    if (zoomLevelLabel) {
+      zoomLevelLabel.textContent = `${zoomLevel}%`;
     }
-
-    replyBtn.addEventListener("click", () => {
-      replyBlock.style.display =
-        replyBlock.style.display === "none" ? "flex" : "none";
-      if (replyBlock.style.display === "flex") replyTextarea.focus();
-    });
-
-    replyCancel.addEventListener("click", () => {
-      replyTextarea.value = "";
-      replyBlock.style.display = "none";
-    });
-
-    replySave.addEventListener("click", () => {
-      const replyText = replyTextarea.value.trim();
-      if (!replyText) return;
-
-      ann.replies.push({ author: "You", text: replyText });
-      replyTextarea.value = "";
-      replyBlock.style.display = "none";
-      refreshReplies();
-      renderMyAnnotationsPanels();
-    });
-
-    card.append(meta, body, snippet, actions, replyBlock);
-    if (ann.replies.length > 0) {
-      refreshReplies();
-      card.appendChild(repliesList);
-    }
-
-    annotationsList.appendChild(card);
-  });
-}
-
-// Render "My Annotations" panels
-function renderMyAnnotationsPanels() {
-  const items = annotations.map(a => `
-    <div class="simple-item">
-      <div class="simple-title">${a.snippet.slice(0, 60)}${a.snippet.length > 60 ? "…" : ""}</div>
-      <div class="simple-meta">${a.time} · ${a.text.slice(0, 70)}${a.text.length > 70 ? "…" : ""}</div>
-    </div>
-  `).join("");
-
-  dashMyAnnotationsList.innerHTML = items || `<div class="simple-empty">No saved annotations yet.</div>`;
-  drawerMyAnnotationsList.innerHTML = items || `<div class="simple-empty">No saved annotations yet.</div>`;
-}
-
-// ================================
-// NOTIFICATIONS DEMO
-// ================================
-const notificationsBtn = document.getElementById("notificationsBtn");
-const notificationsPopover = document.getElementById("notificationsPopover");
-const notifCloseBtn = document.getElementById("notifCloseBtn");
-const notifList = document.getElementById("notifList");
-const notifBadge = document.getElementById("notifBadge");
-
-function openNotifications() {
-  notificationsPopover.classList.add("open");
-}
-function closeNotifications() {
-  notificationsPopover.classList.remove("open");
-}
-
-notificationsBtn.addEventListener("click", () => {
-  notificationsPopover.classList.contains("open") ? closeNotifications() : openNotifications();
-});
-notifCloseBtn.addEventListener("click", closeNotifications);
-
-// Create a fake reply notification so you can demo the visuals
-function simulateReplyNotification(annotationId) {
-  const notif = {
-    id: notifications.length,
-    type: "reply",
-    annotationId,
-    text: "A classmate replied to your annotation.",
-    from: "Classmate",
-    time: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }),
-    read: false
-  };
-  notifications.push(notif);
-  renderNotifications();
-  updateNotifBadge();
-}
-
-function updateNotifBadge() {
-  const unread = notifications.filter(n => !n.read).length;
-  notifBadge.textContent = unread;
-  unread > 0 ? notifBadge.classList.add("show") : notifBadge.classList.remove("show");
-}
-
-function renderNotifications() {
-  notifList.innerHTML = "";
-
-  if (notifications.length === 0) {
-    notifList.innerHTML = `<div class="notif-empty">No notifications yet.</div>`;
-    return;
   }
 
-  notifications.forEach(n => {
-    const item = document.createElement("div");
-    item.className = "notif-item";
-
-    item.innerHTML = `
-      <strong>${n.from}</strong>
-      <div>${n.text}</div>
-      <div style="color: var(--text-muted); font-size: 0.75rem;">${n.time}</div>
-    `;
-
-    item.addEventListener("click", () => {
-      n.read = true;
-      updateNotifBadge();
-      closeNotifications();
-
-      // Jump to annotation
-      openDrawer();
-      document.getElementById("drawerCourses").classList.add("active");
-      drawerSections.forEach(s => s.classList.toggle("active", s.id === "drawerCourses"));
-      drawerLinks.forEach(b => b.classList.toggle("active", b.dataset.drawer === "drawerCourses"));
-
-      const card = document.getElementById(`ann-card-${n.annotationId}`);
-      if (card) {
-        card.scrollIntoView({ behavior: "smooth", block: "center" });
-        card.classList.add("flash");
-        setTimeout(() => card.classList.remove("flash"), 1200);
+  if (zoomInBtn) {
+    zoomInBtn.addEventListener("click", () => {
+      if (zoomLevel < 140) {
+        zoomLevel += 10;
+        applyZoom();
       }
     });
+  }
 
-    notifList.appendChild(item);
+  if (zoomOutBtn) {
+    zoomOutBtn.addEventListener("click", () => {
+      if (zoomLevel > 80) {
+        zoomLevel -= 10;
+        applyZoom();
+      }
+    });
+  }
+
+  applyZoom(); // set initial
+
+  /* === ANNOTATIONS: selection + modal === */
+  const readingContent = document.getElementById("readingContent");
+  const addAnnotationBtn = document.getElementById("addAnnotationBtn");
+
+  const annotationModal = document.getElementById("annotationModal");
+  const modalSnippet = document.getElementById("modalSnippet");
+  const modalTextarea = document.getElementById("modalTextarea");
+  const cancelAnnotationBtn = document.getElementById("cancelAnnotationBtn");
+  const saveAnnotationBtn = document.getElementById("saveAnnotationBtn");
+
+  const annotationsList = document.getElementById("annotationsList");
+  const drawerMyAnnotationsList = document.getElementById("drawerMyAnnotationsList");
+  const dashMyAnnotationsList = document.getElementById("dashMyAnnotationsList");
+  const annotationCountLabel = document.getElementById("annotationCount");
+
+  let currentSelectionText = "";
+  const annotations = [];
+  const notifications = [];
+
+  // Detect text selection inside the reading content
+  if (readingContent) {
+    readingContent.addEventListener("mouseup", () => {
+      const selection = window.getSelection();
+      const text = selection && selection.toString().trim();
+
+      if (
+        text &&
+        selection.anchorNode &&
+        readingContent.contains(selection.anchorNode)
+      ) {
+        currentSelectionText = text;
+        if (addAnnotationBtn) addAnnotationBtn.disabled = false;
+      } else {
+        currentSelectionText = "";
+        if (addAnnotationBtn) addAnnotationBtn.disabled = true;
+      }
+    });
+  }
+
+  function openAnnotationModal() {
+    if (!currentSelectionText || !annotationModal) return;
+    modalSnippet.textContent = currentSelectionText;
+    modalTextarea.value = "";
+    annotationModal.classList.add("active");
+    modalTextarea.focus();
+  }
+
+  function closeAnnotationModal() {
+    if (!annotationModal) return;
+    annotationModal.classList.remove("active");
+  }
+
+  if (addAnnotationBtn) {
+    addAnnotationBtn.addEventListener("click", openAnnotationModal);
+  }
+  if (cancelAnnotationBtn) {
+    cancelAnnotationBtn.addEventListener("click", closeAnnotationModal);
+  }
+
+  if (annotationModal) {
+    annotationModal.addEventListener("click", (e) => {
+      if (e.target === annotationModal) {
+        closeAnnotationModal();
+      }
+    });
+  }
+
+  function formatNowShort() {
+    const d = new Date();
+    return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  }
+
+  function createAnnotation({ snippet, note, author, timeLabel, replies }) {
+    const id = `a_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    annotations.push({
+      id,
+      snippet,
+      note,
+      author: author || "You",
+      timeLabel: timeLabel || "Just now",
+      replies: replies || 0,
+    });
+    renderAnnotations();
+
+    // if it's your new note, also add a gentle notification
+    if (!timeLabel || timeLabel === "Just now") {
+      addNotification({
+        title: "Note saved",
+        body: "Your annotation was added to this chapter.",
+        time: formatNowShort(),
+      });
+    }
+  }
+
+  function renderAnnotations() {
+    // Drawer "Courses" section list
+    if (annotationsList) {
+      annotationsList.innerHTML = "";
+      if (!annotations.length) {
+        const empty = document.createElement("div");
+        empty.className = "annotation-empty";
+        empty.textContent = "No annotations yet.";
+        annotationsList.appendChild(empty);
+      } else {
+        annotations.forEach((a) => {
+          const card = document.createElement("article");
+          card.className = "annotation-card";
+
+          const meta = document.createElement("div");
+          meta.className = "annotation-meta";
+          const left = document.createElement("span");
+          left.textContent = `By ${a.author}`;
+          const right = document.createElement("span");
+          right.textContent = `${a.replies} repl${a.replies === 1 ? "y" : "ies"} · ${a.timeLabel}`;
+          meta.append(left, right);
+
+          const body = document.createElement("div");
+          body.className = "annotation-body";
+          body.textContent = a.note;
+
+          const snippet = document.createElement("div");
+          snippet.className = "annotation-snippet";
+          snippet.textContent = `“${a.snippet}”`;
+
+          card.append(meta, body, snippet);
+          annotationsList.appendChild(card);
+        });
+      }
+    }
+
+    // Drawer "My Annotations" section
+    if (drawerMyAnnotationsList) {
+      drawerMyAnnotationsList.innerHTML = "";
+      if (!annotations.length) {
+        const empty = document.createElement("div");
+        empty.className = "simple-empty";
+        empty.textContent = "No saved annotations yet.";
+        drawerMyAnnotationsList.appendChild(empty);
+      } else {
+        annotations.forEach((a) => {
+          const card = document.createElement("article");
+          card.className = "annotation-card";
+
+          const meta = document.createElement("div");
+          meta.className = "annotation-meta";
+          const left = document.createElement("span");
+          left.textContent = a.timeLabel;
+          const right = document.createElement("span");
+          right.textContent = "Chapter 15.1";
+          meta.append(left, right);
+
+          const body = document.createElement("div");
+          body.className = "annotation-body";
+          body.textContent = a.note;
+
+          const snippet = document.createElement("div");
+          snippet.className = "annotation-snippet";
+          snippet.textContent = `“${a.snippet}”`;
+
+          card.append(meta, body, snippet);
+          drawerMyAnnotationsList.appendChild(card);
+        });
+      }
+    }
+
+    // Dashboard "My Annotations" tab list
+    if (dashMyAnnotationsList) {
+      dashMyAnnotationsList.innerHTML = "";
+      if (!annotations.length) {
+        const empty = document.createElement("div");
+        empty.className = "simple-empty";
+        empty.textContent = "No saved annotations yet.";
+        dashMyAnnotationsList.appendChild(empty);
+      } else {
+        annotations.forEach((a) => {
+          const item = document.createElement("div");
+          item.className = "simple-item";
+
+          const title = document.createElement("div");
+          title.className = "simple-title";
+          title.textContent = "15.1 Introduction";
+
+          const meta = document.createElement("div");
+          meta.className = "simple-meta";
+          meta.textContent = `${a.note.slice(0, 60)}${a.note.length > 60 ? "…" : ""}`;
+
+          item.append(title, meta);
+          dashMyAnnotationsList.appendChild(item);
+        });
+      }
+    }
+
+    // Update count badge in drawer
+    if (annotationCountLabel) {
+      annotationCountLabel.textContent = annotations.length.toString();
+    }
+
+    // Update profile mini-summary in drawer
+    const profileNotesLine = document.querySelector(
+      "#drawerProfile .profile-block div:nth-child(2)"
+    );
+    if (profileNotesLine) {
+      profileNotesLine.innerHTML = `<strong>Notes this week:</strong> ${annotations.length}`;
+    }
+  }
+
+  if (saveAnnotationBtn) {
+    saveAnnotationBtn.addEventListener("click", () => {
+      const noteText = modalTextarea.value.trim();
+      if (!noteText || !currentSelectionText) {
+        closeAnnotationModal();
+        return;
+      }
+      createAnnotation({
+        snippet: currentSelectionText,
+        note: noteText,
+      });
+      currentSelectionText = "";
+      if (addAnnotationBtn) addAnnotationBtn.disabled = true;
+      closeAnnotationModal();
+    });
+  }
+
+  /* === ANNOTATION DRAWER OPEN/CLOSE === */
+  const readingShell = document.getElementById("readingShell");
+  const toggleDrawerBtn = document.getElementById("toggleDrawerBtn");
+  const closeDrawerBtn = document.getElementById("closeDrawerBtn");
+  const drawerBackdrop = document.getElementById("drawerBackdrop");
+  const drawerLinks = document.querySelectorAll(".drawer-link");
+  const drawerSections = document.querySelectorAll(".drawer-section");
+
+  function openDrawer() {
+    if (!readingShell) return;
+    readingShell.classList.add("drawer-open");
+  }
+  function closeDrawer() {
+    if (!readingShell) return;
+    readingShell.classList.remove("drawer-open");
+  }
+
+  if (toggleDrawerBtn) toggleDrawerBtn.addEventListener("click", openDrawer);
+  if (closeDrawerBtn) closeDrawerBtn.addEventListener("click", closeDrawer);
+  if (drawerBackdrop) drawerBackdrop.addEventListener("click", closeDrawer);
+
+  drawerLinks.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.dataset.drawer;
+      drawerLinks.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      drawerSections.forEach((sec) => {
+        sec.classList.toggle("active", sec.id === targetId);
+      });
+    });
   });
-}
+
+  /* === NOTIFICATIONS === */
+  const notificationsBtn = document.getElementById("notificationsBtn");
+  const notificationsPopover = document.getElementById("notificationsPopover");
+  const notifCloseBtn = document.getElementById("notifCloseBtn");
+  const notifList = document.getElementById("notifList");
+  const notifBadge = document.getElementById("notifBadge");
+
+  function renderNotifications() {
+    // badge + profile dots
+    const count = notifications.length;
+    if (notifBadge) {
+      notifBadge.textContent = count.toString();
+      notifBadge.classList.toggle("show", count > 0);
+    }
+    if (homeProfile) {
+      homeProfile.classList.toggle("has-notifications", count > 0);
+    }
+    if (readingProfile) {
+      readingProfile.classList.toggle("has-notifications", count > 0);
+    }
+
+    if (!notifList) return;
+
+    notifList.innerHTML = "";
+    if (!notifications.length) {
+      const empty = document.createElement("div");
+      empty.className = "notif-empty";
+      empty.textContent = "No notifications yet.";
+      notifList.appendChild(empty);
+      return;
+    }
+
+    notifications.forEach((n) => {
+      const item = document.createElement("div");
+      item.className = "notif-item";
+
+      const title = document.createElement("strong");
+      title.textContent = n.title;
+
+      const body = document.createElement("div");
+      body.textContent = n.body;
+
+      const time = document.createElement("div");
+      time.style.fontSize = "0.78rem";
+      time.style.color = "#6b7280";
+      time.textContent = n.time;
+
+      item.append(title, body, time);
+
+      item.addEventListener("click", () => {
+        // clicking a notification opens the drawer on "My Annotations"
+        openDrawer();
+        drawerLinks.forEach((b) => {
+          if (b.dataset.drawer === "drawerMyAnnotations") {
+            b.click();
+          }
+        });
+      });
+
+      notifList.appendChild(item);
+    });
+  }
+
+  function addNotification({ title, body, time }) {
+    notifications.unshift({
+      id: `n_${Date.now()}_${Math.random().toString(16).slice(2)}`,
+      title,
+      body,
+      time,
+    });
+    renderNotifications();
+  }
+
+  if (notificationsBtn && notificationsPopover) {
+    notificationsBtn.addEventListener("click", () => {
+      const isOpen = notificationsPopover.classList.contains("open");
+      notificationsPopover.classList.toggle("open", !isOpen);
+      if (!isOpen) {
+        renderNotifications();
+      }
+    });
+  }
+
+  if (notifCloseBtn && notificationsPopover) {
+    notifCloseBtn.addEventListener("click", () => {
+      notificationsPopover.classList.remove("open");
+    });
+  }
+
+  // Close notifications when clicking outside
+  document.addEventListener("click", (e) => {
+    if (
+      notificationsPopover &&
+      notificationsPopover.classList.contains("open") &&
+      e.target !== notificationsBtn &&
+      !notificationsPopover.contains(e.target)
+    ) {
+      notificationsPopover.classList.remove("open");
+    }
+  });
+
+  /* === SEED EXAMPLE DATA === */
+
+  // Example annotations (comments)
+  createAnnotation({
+    snippet: "usability testing",
+    note: "I wonder if the kids would actually enjoy being 'tested' like this or if it needs to be framed as a game.",
+    author: "Tiffany Patrick",
+    timeLabel: "Yesterday · 8:14 PM",
+    replies: 2,
+  });
+
+  createAnnotation({
+    snippet: "Field Studies, which take place in natural settings",
+    note: "This sounds most realistic for the hamster app, since families would actually be at home with the pet.",
+    author: "Tiffany Patrick",
+    timeLabel: "Today · 9:02 AM",
+    replies: 1,
+  });
+
+  // Example notifications
+  addNotification({
+    title: "Jay replied to your note",
+    body: "“Good point about making the evaluation feel like a game for kids.”",
+    time: "1 hr ago",
+  });
+
+  addNotification({
+    title: "Instructor highlighted your annotation",
+    body: "Your comment on field studies was marked as a helpful example.",
+    time: "Earlier today",
+  });
+
+  renderAnnotations();
+  renderNotifications();
+});
+
 
 
 
