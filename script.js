@@ -272,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           const title = document.createElement("div");
           title.className = "simple-title";
-          title.textContent = "Week 8 · Evaluating children’s interfaces";
+          title.textContent = "Week 8 · Testing";
 
           const meta = document.createElement("div");
           meta.className = "simple-meta";
@@ -462,7 +462,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ===== SEED EXAMPLE DATA (Perusall-style) ===== */
   createAnnotation({
     snippet:
-      "observing how children respond",
+      "usability labs",
     note:
       "I’m wondering whether kids would feel nervous in a lab setting and if that would change how they interact with the interface.",
     author: "Tiffany Patrick",
@@ -473,7 +473,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   createAnnotation({
     snippet:
-      "natural settings such as homes, schools, and after-school programs.",
+      "which take place in natural",
     note:
       "This seems more realistic for our hamster app idea, since we care about how kids actually use it with their families.",
     author: "Tiffany Patrick",
