@@ -61,7 +61,7 @@ body {
   padding: 6px 14px;
   margin-bottom: 16px;
   background: #ffffff;
-  box-shadow: 0 10px 30px rgba(148, 163, 184, 0.2);
+  box-shadow: 0 10px 30px rgba(148, 163, 184, 0.20);
   border: 1px solid rgba(248, 208, 218, 0.9);
 }
 
@@ -385,6 +385,8 @@ body {
   border: 1px solid #f4c8d7;
   box-shadow: var(--shadow-soft);
   overflow: hidden;
+  /* NEW: make it fill the screen vertically so you don't get a big blush gap */
+  min-height: calc(100vh - var(--nav-height) - 40px);
 }
 
 .reading-toolbar {
@@ -442,6 +444,7 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+
   background: #ffffff;
   color: #4b5563;
   border: 1px solid #f4c8d7;
@@ -464,8 +467,6 @@ body {
   text-align: center;
 }
 
-/* Reading layout & pane */
-
 .reading-layout {
   position: relative;
   display: block;
@@ -477,7 +478,8 @@ body {
   background: #fdfbff;
   border: 1px solid #e5d2d8;
   min-height: 360px;
-  max-height: 540px;
+  /* NEW: remove the short cap so the text block can actually grow */
+  max-height: none;
   overflow: auto;
 }
 
@@ -862,12 +864,15 @@ textarea::placeholder {
     border-radius: 22px 22px 0 0;
     bottom: 0;
     top: auto;
+    border-left: none;
+    border-top: 1px solid #f4c8d7;
   }
 }
 
 @media (min-width: 881px) {
   /* drawer-backdrop already controlled by .drawer-open */
 }
+
 
 
 

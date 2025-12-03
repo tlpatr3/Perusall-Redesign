@@ -502,7 +502,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   addNotification({
-    title: "Jay replied to your note",
+    title: "Pevaga replied to your note",
     body: "“Good point about mixing lab studies with field studies for the hamster app.”",
     time: "1 hr ago",
   });
